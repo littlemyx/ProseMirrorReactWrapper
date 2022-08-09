@@ -1,0 +1,26 @@
+/*!*************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./src/lib/index.css ***!
+  \*************************************************************************************************/
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  height: 100%;
+}
+
+h1 {
+  margin: 0;
+  font-weight: 300;
+}
+
+body {
+  background: url(../058b879c721c1e13b750.png) no-repeat 98% 2%;
+  background-size: 300px;
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+
+/*# sourceMappingURL=index.css.map*/

@@ -1,7 +1,7 @@
 {
-  "name": "@hodgef/ts-library-boilerplate-basic",
-  "version": "1.1.133",
-  "description": "Typescript Minimal Starter Kit for building libraries",
+  "name": "prose-mirror-react-wrapper",
+  "version": "1.0.0",
+  "description": "Basic React wrapper for ProseMirror",
   "main": "build/index.js",
   "types": "build/types/index.d.ts",
   "scripts": {
@@ -15,17 +15,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/hodgef/ts-library-boilerplate-basic"
+    "url": "https://github.com/littlemyx/ProseMirrorReactWrapper"
   },
-  "author": "Francisco Hodge <hello@franciscohodge.com> (https://github.com/hodgef)",
+  "author": "Andrei Mukhin <littlemyx@gmail.com> (https://631am.com)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hodgef/ts-library-boilerplate-basic/issues"
+    "url": "https://github.com/littlemyx/ProseMirrorReactWrapper/issues"
   },
-  "homepage": "https://github.com/hodgef/ts-library-boilerplate-basic",
+  "homepage": "https://github.com/littlemyx/ProseMirrorReactWrapper",
   "keywords": [
     "library",
-    "starter",
+    "react",
     "es6"
   ],
   "devDependencies": {

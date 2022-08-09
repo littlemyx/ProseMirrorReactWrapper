@@ -1,7 +1,7 @@
 /*!
  * 
- *   @hodgef/ts-library-boilerplate-basic v1.1.133
- *   https://github.com/hodgef/ts-library-boilerplate-basic
+ *   prose-mirror-react-wrapper v1.0.0
+ *   https://github.com/littlemyx/ProseMirrorReactWrapper
  *
  *   Copyright (c) Francisco Hodge (https://github.com/hodgef) and project contributors.
  *
@@ -9,5 +9,5 @@
  *   LICENSE file in the root directory of this source tree.
  *
  */
-!function(e,o){"object"==typeof exports&&"object"==typeof module?module.exports=o():"function"==typeof define&&define.amd?define([],o):"object"==typeof exports?exports.MyLibrary=o():e.MyLibrary=o()}(self,(()=>(()=>{"use strict";var e={d:(o,t)=>{for(var r in t)e.o(t,r)&&!e.o(o,r)&&Object.defineProperty(o,r,{enumerable:!0,get:t[r]})},o:(e,o)=>Object.prototype.hasOwnProperty.call(e,o),r:e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})}},o={};function t(e,o){for(var t=0;t<o.length;t++){var r=o[t];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}function r(e,o,r){return o&&t(e.prototype,o),r&&t(e,r),Object.defineProperty(e,"prototype",{writable:!1}),e}e.r(o),e.d(o,{default:()=>n});const n=r((function e(){var o,t,r;!function(e,o){if(!(e instanceof o))throw new TypeError("Cannot call a class as a function")}(this,e),r=function(){return console.log("Library method fired"),!0},(t="myMethod")in(o=this)?Object.defineProperty(o,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):o[t]=r,console.log("Library constructor loaded")}));return o})()));
+!function(e,r){"object"==typeof exports&&"object"==typeof module?module.exports=r():"function"==typeof define&&define.amd?define([],r):"object"==typeof exports?exports.ProseMirrorReactWrapper=r():e.ProseMirrorReactWrapper=r()}(self,(()=>(()=>{"use strict";var e={d:(r,o)=>{for(var t in o)e.o(o,t)&&!e.o(r,t)&&Object.defineProperty(r,t,{enumerable:!0,get:o[t]})},o:(e,r)=>Object.prototype.hasOwnProperty.call(e,r),r:e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})}},r={};function o(e,r){for(var o=0;o<r.length;o++){var t=r[o];t.enumerable=t.enumerable||!1,t.configurable=!0,"value"in t&&(t.writable=!0),Object.defineProperty(e,t.key,t)}}function t(e,r,t){return r&&o(e.prototype,r),t&&o(e,t),Object.defineProperty(e,"prototype",{writable:!1}),e}e.r(r),e.d(r,{default:()=>n});const n=t((function e(){var r,o,t;!function(e,r){if(!(e instanceof r))throw new TypeError("Cannot call a class as a function")}(this,e),t=function(){return console.log("Library method fired"),!0},(o="myMethod")in(r=this)?Object.defineProperty(r,o,{value:t,enumerable:!0,configurable:!0,writable:!0}):r[o]=t,console.log("Library constructor loaded")}));return r})()));
 //# sourceMappingURL=index.js.map
