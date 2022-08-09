@@ -3,11 +3,11 @@ import ReactDOM from "react-dom";
 // import "./styles/styles.scss";
 // import "./styles/pagination.scss";
 
-import App from "../lib/index.tsx";
+import ProseMirror from "../lib/ProseMirrorWrapper";
 
 const root = document.getElementById("react-root");
 
-ReactDOM.render(<App />, root);
+ReactDOM.render(<ProseMirror />, root);
 
 if (module.hot) {
   module.hot.accept();
