@@ -41,10 +41,24 @@ module.exports = {
       new CssMinimizerPlugin()
     ]
   },
+  externals: {
+    react: {
+      root: "React",
+      commonjs2: "react",
+      commonjs: "react",
+      amd: "react"
+    },
+    "react-dom": {
+      root: "ReactDOM",
+      commonjs2: "react-dom",
+      commonjs: "react-dom",
+      amd: "react-dom"
+    }
+  },
   module: {
     rules: [
       {
-        test: /\.(m|j|t)s$/,
+        test: /\.(js|json|ts|tsx)$/,
         exclude: /(node_modules|bower_components)/,
         use: {
           loader: "babel-loader"

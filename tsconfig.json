@@ -11,6 +11,8 @@
       "suppressImplicitAnyIndexErrors": true,
       "lib": ["es2018", "dom"],
       "moduleResolution": "node",
+      "jsx": "react",
+      "allowSyntheticDefaultImports": true
     },
     "include": ["src/lib"],
     "exclude": ["src/lib/**/tests"],
