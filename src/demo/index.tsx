@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 // import "./styles/styles.scss";
 // import "./styles/pagination.scss";
 
-import ProseMirror from "../lib/ProseMirrorWrapper";
+import ProseMirror from "./../lib/index";
 
 const root = document.getElementById("react-root");
 
