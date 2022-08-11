@@ -29,45 +29,7 @@ import {
   MenuItemSpec
 } from "prosemirror-menu";
 
-import Button from "./components/Button";
-
 import cut from "./cut";
-
-function toggleMarkCommand(mark: MarkType): Command {
-  return (
-    state: EditorState,
-    dispatch: ((tr: Transaction) => void) | undefined
-  ) => {
-    return toggleMark(mark)(state, dispatch);
-  };
-}
-
-const toggleBold = toggleMarkCommand(schema.marks.strong);
-
-const toggleItalic = toggleMarkCommand(schema.marks.em);
-
-const toggleHeading = toggleMarkCommand(schema.marks.heading);
-
-function isBold(state: EditorState): boolean {
-  return isMarkActive(state, schema.marks.strong);
-}
-
-function isItalic(state: EditorState): boolean {
-  return isMarkActive(state, schema.marks.em);
-}
-
-function isHeader(state: EditorState): boolean {
-  console.log(schema);
-  return isMarkActive(state, schema.marks.heading);
-}
-
-// https://github.com/ProseMirror/prosemirror-example-setup/blob/afbc42a68803a57af3f29dd93c3c522c30ea3ed6/src/menu.js#L57-L61
-function isMarkActive(state: EditorState, mark: MarkType): boolean {
-  const { from, $from, to, empty } = state.selection;
-  return empty
-    ? !!mark.isInSet(state.storedMarks || $from.marks())
-    : state.doc.rangeHasMark(from, to, mark);
-}
 
 function cmdItem(cmd: Command, options: Partial<MenuItemSpec>) {
   let passedOptions: MenuItemSpec = {
@@ -99,57 +61,6 @@ function markItem(markType: MarkType, options: Partial<MenuItemSpec>) {
   return cmdItem(toggleMark(markType), passedOptions);
 }
 
-function canInsert(state: EditorState, nodeType: NodeType) {
-  let $from = state.selection.$from;
-  for (let d = $from.depth; d >= 0; d--) {
-    let index = $from.index(d);
-    if ($from.node(d).canReplaceWith(index, index, nodeType)) return true;
-  }
-  return false;
-}
-
-function insertImageItem(nodeType: NodeType) {
-  return new MenuItem({
-    title: "Insert image",
-    label: "Image",
-    enable(state) {
-      return canInsert(state, nodeType);
-    },
-    run(state, _, view) {
-      let { from, to } = state.selection,
-        attrs = null;
-      if (
-        state.selection instanceof NodeSelection &&
-        state.selection.node.type == nodeType
-      )
-        attrs = state.selection.node.attrs;
-    }
-  });
-}
-
-function linkItem(markType: MarkType) {
-  return new MenuItem({
-    title: "Add or remove link",
-    icon: icons.link,
-    active(state) {
-      return markActive(state, markType);
-    },
-    enable(state) {
-      return !state.selection.empty;
-    },
-    run(state, dispatch, view) {
-      if (markActive(state, markType)) {
-        toggleMark(markType)(state, dispatch);
-        return true;
-      }
-    }
-  });
-}
-
-function wrapListItem(nodeType: NodeType, options: Partial<MenuItemSpec>) {
-  return cmdItem(wrapInList(nodeType, (options as any).attrs), options);
-}
-
 type MenuItemResult = {
   /// A menu item to toggle the [strong mark](#schema-basic.StrongMark).
   toggleStrong?: MenuItem;
@@ -157,31 +68,9 @@ type MenuItemResult = {
   /// A menu item to toggle the [emphasis mark](#schema-basic.EmMark).
   toggleEm?: MenuItem;
 
-  /// A menu item to toggle the [code font mark](#schema-basic.CodeMark).
-  toggleCode?: MenuItem;
-
-  /// A menu item to toggle the [link mark](#schema-basic.LinkMark).
-  toggleLink?: MenuItem;
-
-  /// A menu item to insert an [image](#schema-basic.Image).
-  insertImage?: MenuItem;
-
-  /// A menu item to wrap the selection in a [bullet list](#schema-list.BulletList).
-  wrapBulletList?: MenuItem;
-
-  /// A menu item to wrap the selection in an [ordered list](#schema-list.OrderedList).
-  wrapOrderedList?: MenuItem;
-
-  /// A menu item to wrap the selection in a [block quote](#schema-basic.BlockQuote).
-  wrapBlockQuote?: MenuItem;
-
   /// A menu item to set the current textblock to be a normal
   /// [paragraph](#schema-basic.Paragraph).
   makeParagraph?: MenuItem;
-
-  /// A menu item to set the current textblock to be a
-  /// [code block](#schema-basic.CodeBlock).
-  makeCodeBlock?: MenuItem;
 
   /// Menu items to set the current textblock to be a
   /// [heading](#schema-basic.Heading) of level _N_.
@@ -192,22 +81,16 @@ type MenuItemResult = {
   makeHead5?: MenuItem;
   makeHead6?: MenuItem;
 
-  /// A menu item to insert a horizontal rule.
-  insertHorizontalRule?: MenuItem;
+  /// A menu item to set the current textblock to be a
+  /// [code block](#schema-basic.CodeBlock).
+  makeCodeBlock?: MenuItem;
 
-  /// A dropdown containing the `insertImage` and
-  /// `insertHorizontalRule` items.
-  insertMenu: Dropdown;
+  /// Inline-markup related menu items.
+  inlineMenu: MenuElement[][];
 
   /// A dropdown containing the items for making the current
   /// textblock a paragraph, code block, or heading.
   typeMenu: Dropdown;
-
-  /// Array of block-related menu items.
-  blockMenu: MenuElement[][];
-
-  /// Inline-markup related menu items.
-  inlineMenu: MenuElement[][];
 
   /// An array of arrays of menu elements for use as the full menu
   /// for, for example the [menu
@@ -295,9 +178,7 @@ const opts: Parameters<typeof useProseMirror>[0] = {
       ...baseKeymap,
       "Mod-z": undo,
       "Mod-y": redo,
-      "Mod-Shift-z": redo,
-      "Mod-b": toggleBold,
-      "Mod-i": toggleItalic
+      "Mod-Shift-z": redo
     })
   ]
 };
