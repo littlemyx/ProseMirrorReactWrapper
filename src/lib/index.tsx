@@ -1,1 +1,1 @@
-export { default } from "./ProseMirrorWrapper";
+export { default } from "./App";

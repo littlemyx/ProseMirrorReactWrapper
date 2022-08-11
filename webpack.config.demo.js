@@ -6,9 +6,19 @@ module.exports = {
   devtool: "cheap-module-source-map",
   entry: "./src/demo/index.tsx",
   output: {
+    // filename: "[name].bundle.js"
     filename: "index.js"
   },
   optimization: {
+    // splitChunks: {
+    //   cacheGroups: {
+    //     vendor: {
+    //       test: /[\\/]node_modules[\\/]/,
+    //       chunks: "initial",
+    //       name: "vendor"
+    //     }
+    //   }
+    // },
     minimize: false
   },
   devServer: {
@@ -39,9 +49,15 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "css/index.css"
     }),
-    new HtmlWebpackPlugin({ template: "dist/index.html" })
+    new HtmlWebpackPlugin({
+      name: "index.html",
+      inject: true,
+      template: "dist/index.html"
+    })
   ],
   resolve: {
-    extensions: [".tsx", ".ts", ".js", ".json"]
+    extensions: [".tsx", ".ts", ".js", ".json"],
+    mainFields: ["module", "main"],
+    exportsFields: ["module", "exports"]
   }
 };
