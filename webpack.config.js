@@ -30,8 +30,8 @@ module.exports = {
   output: {
     filename: "index.js",
     path: path.resolve(__dirname, "build"),
-    library: "ProseMirrorReactWrapper",
-    libraryTarget: "umd",
+    // library: "ProseMirrorReactWrapper",
+    // libraryTarget: "umd",
     clean: true
   },
   optimization: {

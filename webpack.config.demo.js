@@ -57,7 +57,7 @@ module.exports = {
   ],
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".json"],
-    mainFields: ["module", "main"],
+    // mainFields: ["browser", "main"]
     exportsFields: ["module", "exports"]
   }
 };
