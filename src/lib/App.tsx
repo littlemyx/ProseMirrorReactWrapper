@@ -30,6 +30,8 @@ import {
 
 import cut from "./cut";
 
+import spellcheckPlugin from "./plugins/spellchecker/spellckecker";
+
 function cmdItem(cmd: Command, options: Partial<MenuItemSpec>) {
   let passedOptions: MenuItemSpec = {
     label: options.title as string | undefined,
@@ -171,6 +173,7 @@ const opts: Parameters<typeof useProseMirror>[0] = {
       floating: true,
       content: buildMenuItems(schema).fullMenu
     }),
+    spellcheckPlugin(),
 
     history(),
     keymap({
