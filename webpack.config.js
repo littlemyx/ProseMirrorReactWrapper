@@ -80,6 +80,8 @@ module.exports = {
     new webpack.BannerPlugin(banner)
   ],
   resolve: {
-    extensions: [".ts", ".js", ".json"]
+    extensions: [".tsx", ".ts", ".js", ".json"],
+    // mainFields: ["browser", "main"]
+    exportsFields: ["module", "exports"]
   }
 };
