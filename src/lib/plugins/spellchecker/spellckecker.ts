@@ -20,12 +20,34 @@ const DICT = [
   "cat",
   "card",
   "dog",
-  "rabbit",
-  "giraffi",
-  "horse",
+  "dorf",
   "donkey",
-  "zebra"
+  "rabbit",
+  "random",
+  "giraffi",
+  "giant",
+  "horse",
+  "horde",
+  "honey",
+  "zebra",
+  "zero",
+  "zena"
 ];
+
+const suggester = (token: string) => {
+  const result = new Set<string>();
+  const dict = [...DICT];
+  for (let i = 1; i < token.length; i++) {
+    const char = token.slice(0, i);
+    const words = dict.filter(d => d.startsWith(char));
+    words.forEach(word => {
+      if (word.length > token.length - 2 && word.length < token.length + 2)
+        result.add(word);
+    });
+  }
+
+  return Array.from(result);
+};
 
 const typo = {
   ignore: (token: string): void => {
@@ -349,14 +371,16 @@ function spellcheckPlugin() {
         };
 
         let sbox = getSbox();
-        const results: any[] = [];
+
+        const results: string[] = suggester(token);
+
         sboxShow(
           sbox,
           view.dom,
           token,
           screenPos,
-          [],
-          true,
+          results,
+          false,
           createCorrectionFunction(view, deco)
         );
 
