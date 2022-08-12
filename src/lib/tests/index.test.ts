@@ -1,5 +1,1 @@
-import MyLibrary from '../index';
-
-it('Runs without crashing', () => {
-  new MyLibrary();
-});
+it.todo("Runs without crashing");

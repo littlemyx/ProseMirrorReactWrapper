@@ -11,9 +11,37 @@
       "suppressImplicitAnyIndexErrors": true,
       "lib": ["es2018", "dom"],
       "moduleResolution": "node",
+      "skipLibCheck": true,
       "jsx": "react",
       "allowSyntheticDefaultImports": true
     },
     "include": ["**/*.ts", "**/*.tsx"],
-    "exclude": ["src/lib/**/tests"],
+    "exclude": ["src/lib/**/tests", "node_modules", "build/**", "dist/**", "**/*.d.ts"],
 }
+
+// {
+//   "compilerOptions": {
+//     "target": "es5",
+//     "lib": [
+//       "dom",
+//       "dom.iterable",
+//       "esnext"
+//     ],
+//     "allowJs": true,
+//     "skipLibCheck": true,
+//     "esModuleInterop": true,
+//     "allowSyntheticDefaultImports": true,
+//     "strict": true,
+//     "forceConsistentCasingInFileNames": true,
+//     "noFallthroughCasesInSwitch": true,
+//     "module": "esnext",
+//     "moduleResolution": "node",
+//     "resolveJsonModule": true,
+//     "isolatedModules": true,
+//     "noEmit": true,
+//     "jsx": "react-jsx"
+//   },
+//   "include": [
+//     "src"
+//   ]
+// }
