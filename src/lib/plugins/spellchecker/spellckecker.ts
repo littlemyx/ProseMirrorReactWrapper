@@ -46,17 +46,17 @@ function addCSSclass(rules: any[]) {
   const style = document.createElement("style");
   style.appendChild(document.createTextNode("")); // WebKit hack :(
   document.head.appendChild(style);
-  const sheet = style.sheet;
+  const sheet = style.sheet as CSSStyleSheet;
 
   rules.forEach((rule, index) => {
     try {
       if ("insertRule" in sheet) {
         sheet.insertRule(rule.selector + "{" + rule.rule + "}", index);
-      } else if ("addRule" in sheet) {
-        sheet.addRule(rule.selector, rule.rule, index);
+      } else {
+        throw new Error("Can't add CSS rules");
       }
     } catch (e) {
-      // firefox can break here
+      console.error(e);
     }
   });
 }
@@ -349,6 +349,7 @@ function spellcheckPlugin() {
         };
 
         let sbox = getSbox();
+        const results: any[] = [];
         sboxShow(
           sbox,
           view.dom,
@@ -357,38 +358,6 @@ function spellcheckPlugin() {
           [],
           true,
           createCorrectionFunction(view, deco)
-        );
-
-        const results: any[] = [];
-        // async
-        typo.suggest(
-          token,
-          null,
-          () => {
-            //console.log('done');
-            sboxShow(
-              sbox,
-              view.dom,
-              token,
-              screenPos,
-              results,
-              false,
-              createCorrectionFunction(view, deco)
-            );
-          },
-          next => {
-            //console.log('found '+next);
-            results.push(next);
-            sboxShow(
-              sbox,
-              view.dom,
-              token,
-              screenPos,
-              results,
-              true,
-              createCorrectionFunction(view, deco)
-            );
-          }
         );
 
         event.preventDefault();
