@@ -10,8 +10,7 @@ import { MarkType, Schema, NodeType } from "prosemirror-model";
 import { history, redo, undo } from "prosemirror-history";
 import { useProseMirror, ProseMirror } from "use-prosemirror";
 import { NodeSelection, EditorState, Transaction } from "prosemirror-state";
-import { wrapInList } from "prosemirror-schema-list";
-import { exampleSetup } from "prosemirror-example-setup";
+// import { exampleSetup } from "prosemirror-example-setup";
 import {
   wrapItem,
   blockTypeItem,

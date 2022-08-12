@@ -11,11 +11,12 @@
       "suppressImplicitAnyIndexErrors": true,
       "lib": ["es2018", "dom"],
       "moduleResolution": "node",
+      "skipLibCheck": true,
       "jsx": "react",
       "allowSyntheticDefaultImports": true
     },
     "include": ["**/*.ts", "**/*.tsx"],
-    "exclude": ["src/lib/**/tests"],
+    "exclude": ["src/lib/**/tests", "node_modules", "build/**", "dist/**", "**/*.d.ts"],
 }
 
 // {

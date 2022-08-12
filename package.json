@@ -7,6 +7,7 @@
   "scripts": {
     "start": "webpack serve --config webpack.config.demo.js",
     "build": "webpack && tsc",
+    "tsc": "tsc",
     "build:demo": "webpack --config webpack.config.demo.js",
     "test": "jest --silent",
     "coverage": "npm run test -- --coverage",
@@ -29,22 +30,26 @@
     "es6"
   ],
   "dependencies": {
-    "@types/prosemirror-commands": "1.0.4",
     "@types/prosemirror-history": "1.0.2",
-    "@types/prosemirror-keymap": "1.0.4",
     "@types/prosemirror-schema-basic": "1.0.2",
-    "@types/prosemirror-view": "1.17.1",
-    "prosemirror-commands": "1.1.5",
     "prosemirror-example-setup": "^1.2.1",
     "prosemirror-history": "1.1.3",
-    "prosemirror-keymap": "1.1.4",
     "prosemirror-menu": "^1.2.1",
     "prosemirror-schema-basic": "1.1.2",
-    "prosemirror-view": "1.17.3",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-scripts": "4.0.0",
-    "use-prosemirror": "1.2.1"
+    "use-prosemirror": "1.2.1",
+    "prosemirror-commands": "~1.2.1",
+    "prosemirror-keymap": "~1.1.5",
+    "prosemirror-schema-list": "~1.1.6",
+    "prosemirror-state": "~1.3.4",
+    "prosemirror-transform": "~1.3.3",
+    "@types/prosemirror-commands": "~1.0.4",
+    "@types/prosemirror-keymap": "~1.0.4",
+    "@types/prosemirror-schema-list": "~1.0.3",
+    "@types/prosemirror-state": "~1.2.8",
+    "@types/prosemirror-transform": "~1.1.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.18.10",
