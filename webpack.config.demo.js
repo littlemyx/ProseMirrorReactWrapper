@@ -6,7 +6,6 @@ module.exports = {
   devtool: "cheap-module-source-map",
   entry: "./src/demo/index.tsx",
   output: {
-    // filename: "[name].bundle.js"
     filename: "index.js"
   },
   optimization: {

@@ -387,66 +387,6 @@ function spellcheckPlugin() {
         event.preventDefault();
         return true;
       }
-
-      // handleContextMenu(view, pos, e) {
-      //   if (!window.typo) return;
-      //   let { decos } = this.getState(view.state);
-      //   let deco = decos.find(pos, pos)[0];
-      //   if (!deco) return;
-
-      //   const $f = view.state.doc.resolve(deco.from),
-      //     $t = view.state.doc.resolve(deco.to);
-      //   let token = $f.parent.textBetween(
-      //     deco.from - $f.start(),
-      //     deco.to - $f.start(),
-      //     " "
-      //   );
-      //   if (!token) return; // sanity
-      //   console.log(token);
-
-      //   let viewDom = view.dom;
-      //   let coords = view.coordsAtPos(pos);
-      //   screenPos = {
-      //     x: e.pageX,
-      //     y: coords.bottom - 4
-      //   };
-
-      //   function correct(correction) {
-      //     let tr = view.state.tr.replaceWith(
-      //       deco.from,
-      //       deco.to,
-      //       view.state.schema.text(correction)
-      //     );
-      //     let $newPos = tr.doc.resolve(
-      //       tr.mapping.map(deco.from + correction.length)
-      //     );
-      //     tr = tr.setSelection(new TextSelection($newPos, $newPos));
-      //     view.dispatch(tr);
-      //     view.focus();
-      //   }
-
-      //   let sbox = getSbox();
-      //   sboxShow(sbox, view.dom, token, screenPos, [], true, correct);
-
-      //   const results = [];
-      //   // async
-      //   window.typo.suggest(
-      //     token,
-      //     null,
-      //     all => {
-      //       //console.log('done');
-      //       sboxShow(sbox, view.dom, token, screenPos, results, false, correct);
-      //     },
-      //     next => {
-      //       //console.log('found '+next);
-      //       results.push(next);
-      //       sboxShow(sbox, view.dom, token, screenPos, results, true, correct);
-      //     }
-      //   );
-
-      //   e.preventDefault();
-      //   return false;
-      // }
     }
   });
 }

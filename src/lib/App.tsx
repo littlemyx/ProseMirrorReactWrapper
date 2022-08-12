@@ -2,24 +2,19 @@
 // import "prosemirror-menu/style/menu.css";
 import "./index.css";
 
-import React, { PropsWithChildren } from "react";
+import React from "react";
 import { schema } from "prosemirror-schema-basic";
 import { keymap } from "prosemirror-keymap";
 import { baseKeymap, Command, toggleMark } from "prosemirror-commands";
 import { MarkType, Schema, NodeType } from "prosemirror-model";
 import { history, redo, undo } from "prosemirror-history";
 import { useProseMirror, ProseMirror } from "use-prosemirror";
-import { NodeSelection, EditorState, Transaction } from "prosemirror-state";
-// import { exampleSetup } from "prosemirror-example-setup";
+import { EditorState } from "prosemirror-state";
 import {
-  wrapItem,
   blockTypeItem,
   Dropdown,
   menuBar,
   DropdownSubmenu,
-  joinUpItem,
-  liftItem,
-  selectParentNodeItem,
   undoItem,
   redoItem,
   icons,
@@ -30,10 +25,10 @@ import {
 
 import cut from "./cut";
 
-import spellcheckPlugin from "./plugins/spellchecker/spellckecker";
+import spellcheckPlugin from "./plugins/spellchecker";
 
 function cmdItem(cmd: Command, options: Partial<MenuItemSpec>) {
-  let passedOptions: MenuItemSpec = {
+  const passedOptions: MenuItemSpec = {
     label: options.title as string | undefined,
     run: cmd
   };
@@ -46,18 +41,18 @@ function cmdItem(cmd: Command, options: Partial<MenuItemSpec>) {
 }
 
 function markActive(state: EditorState, type: MarkType) {
-  let { from, $from, to, empty } = state.selection;
+  const { from, $from, to, empty } = state.selection;
   if (empty) return !!type.isInSet(state.storedMarks || $from.marks());
   else return state.doc.rangeHasMark(from, to, type);
 }
 
 function markItem(markType: MarkType, options: Partial<MenuItemSpec>) {
-  let passedOptions: Partial<MenuItemSpec> = {
+  const passedOptions: Partial<MenuItemSpec> = {
     active(state) {
       return markActive(state, markType);
     }
   };
-  for (let prop in options)
+  for (const prop in options)
     (passedOptions as any)[prop] = (options as any)[prop];
   return cmdItem(toggleMark(markType), passedOptions);
 }
