@@ -174,11 +174,11 @@ const opts: Parameters<typeof useProseMirror>[0] = {
 
     // history(),
     keymap({
-      ...baseKeymap,
+      ...baseKeymap
       // "Mod-z": undo,
       // "Mod-y": redo,
       // "Mod-Shift-z": redo,
-      Tab: tabHandler
+      // Tab: tabHandler
     })
   ]
 };
