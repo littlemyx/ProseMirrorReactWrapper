@@ -264,7 +264,7 @@ function spellcheckPlugin() {
 
   return new Plugin<IPluginState>({
     view(view) {
-      view.dom.spellcheck = false;
+      (view.dom as HTMLDivElement).spellcheck = false;
       return {};
     },
 

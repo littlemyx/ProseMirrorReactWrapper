@@ -8,7 +8,7 @@ import { keymap } from "prosemirror-keymap";
 import { baseKeymap, Command, toggleMark } from "prosemirror-commands";
 import { MarkType, Schema, NodeType } from "prosemirror-model";
 import { history, redo, undo } from "prosemirror-history";
-import { useProseMirror, ProseMirror } from "use-prosemirror";
+import { useProseMirror, ProseMirror } from "./wrapper";
 import { EditorState } from "prosemirror-state";
 import {
   blockTypeItem,
@@ -26,7 +26,7 @@ import {
 import cut from "./cut";
 
 import spellcheckPlugin from "./plugins/spellchecker";
-import autocompletePlugin, { tabHandler } from "./plugins/autocomplete";
+import autocompletePlugin from "./plugins/autocomplete";
 
 function cmdItem(cmd: Command, options: Partial<MenuItemSpec>) {
   const passedOptions: MenuItemSpec = {
@@ -169,7 +169,7 @@ const opts: Parameters<typeof useProseMirror>[0] = {
       floating: true,
       content: buildMenuItems(schema).fullMenu
     }),
-    // spellcheckPlugin(),
+    spellcheckPlugin(),
     autocompletePlugin(),
 
     // history(),

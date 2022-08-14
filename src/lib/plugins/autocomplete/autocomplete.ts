@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Decoration, DecorationSet } from "prosemirror-view";
+import { Mark } from "prosemirror-model";
 import {
   Plugin,
   Selection,
@@ -13,14 +14,44 @@ import { ReplaceStep } from "prosemirror-transform";
 
 import key from "./key";
 
-const DICT = { don: "key", zeb: "ra", li: "on", ki: "tten" };
+const DICT = [
+  "donkey",
+  "dolphin",
+  "dog",
+  "zebra",
+  "snake",
+  "snail",
+  "sparrow",
+  "spider",
+  "shark",
+  "lion",
+  "lobster",
+  "lizard",
+  "lama",
+  "locust",
+  "cat",
+  "rabbit",
+  "giraffi",
+  "horse"
+];
 
-function createCorrectionFunction(view: EditorView, from: number, to: number) {
+function getSuggestions(prefix: string) {
+  return DICT.filter(
+    key => key.length > prefix.length && key.startsWith(prefix.toLowerCase())
+  );
+}
+
+function createCorrectionFunction(
+  view: EditorView,
+  from: number,
+  to: number,
+  mark?: Mark
+) {
   return (correction: string) => {
     let tr = view.state.tr.replaceWith(
       from,
       to,
-      view.state.schema.text(correction)
+      view.state.schema.text(correction, mark)
     );
     const step = tr.steps[0] as ReplaceStep;
     const map = step.getMap();
@@ -197,12 +228,6 @@ interface IPluginState {
 
 function autocompletePlugin() {
   return new Plugin<IPluginState>({
-    view(view) {
-      view.dom.spellcheck = false;
-      return {};
-    },
-    key,
-
     state: {
       init() {
         return {
@@ -240,10 +265,6 @@ function autocompletePlugin() {
       }
     },
     props: {
-      decorations(state: EditorState) {
-        const { decos } = this.getState(state);
-        return decos;
-      },
       handleKeyDown(view: EditorView, event: KeyboardEvent) {
         if (event.key === "Tab") {
           const {
@@ -255,10 +276,6 @@ function autocompletePlugin() {
           } = view.state.selection as TextSelection;
 
           console.log(`tab with cursor position: ${cursorPositions}`);
-
-          if (cursorPositions === endOfDocPosition) {
-            console.log("in the end");
-          }
 
           const node = view.state.doc.nodeAt(cursorPositions - 1);
           console.log(node);
@@ -279,29 +296,45 @@ function autocompletePlugin() {
 
           let token = view.state.doc.textBetween(linkFrom, linkTo, " ");
 
-          const cursorViewPortPosition = view.coordsAtPos(cursorPositions);
+          if (cursorPositions === linkTo) {
+            const wordRegEx = /\w+/g;
+            const matchWord = node.text.match(wordRegEx);
 
-          const screenPos = {
-            x: cursorViewPortPosition.left,
-            y: cursorViewPortPosition.top + 10
-          };
+            const word = matchWord[matchWord.length - 1];
 
-          sboxShow(
-            sbox,
-            view.dom,
-            token,
-            screenPos,
-            ["varian", "suggest"],
-            false,
-            createCorrectionFunction(view, linkFrom, linkTo)
-          );
+            const cursorViewPortPosition = view.coordsAtPos(cursorPositions);
+
+            const screenPos = {
+              x: cursorViewPortPosition.left,
+              y: cursorViewPortPosition.top + 10
+            };
+
+            const suggestions = getSuggestions(word);
+            if (suggestions.length) {
+              sboxShow(
+                sbox,
+                view.dom,
+                word,
+                screenPos,
+                suggestions,
+                false,
+                createCorrectionFunction(
+                  view,
+                  linkTo - word.length,
+                  linkTo,
+                  node.marks
+                )
+              );
+            }
+          }
 
           return true;
         }
         return false;
       },
-      handleClick(view: EditorView, event: MouseEvent) {
+      handleClick(view: EditorView, pos: number, event: MouseEvent) {
         sboxHide(getSbox());
+        return false;
       },
       handleTextInput(
         view: EditorView,
