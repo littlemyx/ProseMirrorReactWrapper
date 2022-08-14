@@ -8,7 +8,7 @@ import { keymap } from "prosemirror-keymap";
 import { baseKeymap, Command, toggleMark } from "prosemirror-commands";
 import { MarkType, Schema, NodeType } from "prosemirror-model";
 import { history, redo, undo } from "prosemirror-history";
-import { useProseMirror, ProseMirror } from "use-prosemirror";
+import { useProseMirror, ProseMirror } from "./wrapper";
 import { EditorState } from "prosemirror-state";
 import {
   blockTypeItem,
@@ -26,6 +26,7 @@ import {
 import cut from "./cut";
 
 import spellcheckPlugin from "./plugins/spellchecker";
+import autocompletePlugin from "./plugins/autocomplete";
 
 function cmdItem(cmd: Command, options: Partial<MenuItemSpec>) {
   const passedOptions: MenuItemSpec = {
@@ -145,7 +146,7 @@ export function buildMenuItems(schema: Schema): MenuItemResult {
 
   r.inlineMenu = [cut([r.toggleStrong, r.toggleEm])];
 
-  r.fullMenu = r.inlineMenu.concat([[r.typeMenu]], [[undoItem, redoItem]]);
+  r.fullMenu = r.inlineMenu.concat([[r.typeMenu]]);
 
   return r;
 }
@@ -169,13 +170,15 @@ const opts: Parameters<typeof useProseMirror>[0] = {
       content: buildMenuItems(schema).fullMenu
     }),
     spellcheckPlugin(),
+    autocompletePlugin(),
 
-    history(),
+    // history(),
     keymap({
-      ...baseKeymap,
-      "Mod-z": undo,
-      "Mod-y": redo,
-      "Mod-Shift-z": redo
+      ...baseKeymap
+      // "Mod-z": undo,
+      // "Mod-y": redo,
+      // "Mod-Shift-z": redo,
+      // Tab: tabHandler
     })
   ]
 };
