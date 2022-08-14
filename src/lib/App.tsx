@@ -26,6 +26,7 @@ import {
 import cut from "./cut";
 
 import spellcheckPlugin from "./plugins/spellchecker";
+import autocompletePlugin, { tabHandler } from "./plugins/autocomplete";
 
 function cmdItem(cmd: Command, options: Partial<MenuItemSpec>) {
   const passedOptions: MenuItemSpec = {
@@ -145,7 +146,7 @@ export function buildMenuItems(schema: Schema): MenuItemResult {
 
   r.inlineMenu = [cut([r.toggleStrong, r.toggleEm])];
 
-  r.fullMenu = r.inlineMenu.concat([[r.typeMenu]], [[undoItem, redoItem]]);
+  r.fullMenu = r.inlineMenu.concat([[r.typeMenu]]);
 
   return r;
 }
@@ -168,14 +169,16 @@ const opts: Parameters<typeof useProseMirror>[0] = {
       floating: true,
       content: buildMenuItems(schema).fullMenu
     }),
-    spellcheckPlugin(),
+    // spellcheckPlugin(),
+    autocompletePlugin(),
 
-    history(),
+    // history(),
     keymap({
       ...baseKeymap,
-      "Mod-z": undo,
-      "Mod-y": redo,
-      "Mod-Shift-z": redo
+      // "Mod-z": undo,
+      // "Mod-y": redo,
+      // "Mod-Shift-z": redo,
+      Tab: tabHandler
     })
   ]
 };

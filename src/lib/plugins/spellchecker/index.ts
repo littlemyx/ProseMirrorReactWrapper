@@ -280,8 +280,7 @@ function spellcheckPlugin() {
         console.log("apply was called");
         sboxHide(getSbox());
 
-        let { decos, cursorDeco }: { decos: DecorationSet; cursorDeco: any } =
-          this.getState(oldState);
+        let { decos, cursorDeco } = this.getState(oldState);
         decos = decos.map(tr.mapping, tr.doc);
 
         if (cursorDeco) {
@@ -348,8 +347,8 @@ function spellcheckPlugin() {
         const { decos } = this.getState(state);
         return decos;
       },
-      handleClick(view: EditorView, pos: number, event: MouseEvent) {
-        // click(view: EditorView, event: MouseEvent) {
+      // Потому что contextmenu
+      handleDoubleClick(view: EditorView, pos: number, event: MouseEvent) {
         const { decos } = this.getState(view.state);
         const deco = decos.find(pos, pos)[0];
         if (!deco) return;
