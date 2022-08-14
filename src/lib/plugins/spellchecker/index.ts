@@ -17,21 +17,24 @@ const DICTIONARY_EXP = {
 };
 
 const DICT = [
-  "cat",
-  "card",
-  "dog",
-  "dorf",
   "donkey",
-  "rabbit",
-  "random",
-  "giraffi",
-  "giant",
-  "horse",
-  "horde",
-  "honey",
+  "dolphin",
+  "dog",
   "zebra",
-  "zero",
-  "zena"
+  "snake",
+  "snail",
+  "sparrow",
+  "spider",
+  "shark",
+  "lion",
+  "lobster",
+  "lizard",
+  "lama",
+  "locust",
+  "cat",
+  "rabbit",
+  "giraffi",
+  "horse"
 ];
 
 const suggester = (token: string) => {
@@ -51,7 +54,7 @@ const suggester = (token: string) => {
 
 const typo = {
   ignore: (token: string): void => {
-    return null;
+    DICT.push(token);
   },
   suggest: (
     arg?: any,
@@ -154,7 +157,7 @@ function sboxShow(
   if (separator)
     options +=
       '<option style="min-height:1px; max-height:1px; padding:0; background-color: #000000;" disabled>&nbsp;</option>';
-  options += '<option value="##ignoreall##">Ignore&nbsp;All</option>';
+  options += '<option value="##ignoreall##">Add to dictionary</option>';
 
   const indexInParent = [].slice
     .call(selwidget.parentElement.children)
