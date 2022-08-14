@@ -292,11 +292,17 @@ function autocompletePlugin() {
           const linkTo = linkFrom + linkNode.nodeSize;
           console.log(`start: ${linkFrom} end: ${linkTo}`);
 
-          let sbox = getSbox();
+          const sbox = getSbox();
 
-          let token = view.state.doc.textBetween(linkFrom, linkTo, " ");
+          const token = view.state.doc.textBetween(linkFrom, linkTo, " ");
 
-          if (cursorPositions === linkTo) {
+          const letterRegEx = /\w/g;
+          const matchLetter =
+            token.length > 0
+              ? token[token.length - 1].match(letterRegEx)
+              : null;
+
+          if (cursorPositions === linkTo && matchLetter !== null) {
             const wordRegEx = /\w+/g;
             const matchWord = node.text.match(wordRegEx);
 
