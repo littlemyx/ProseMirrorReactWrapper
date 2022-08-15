@@ -3,7 +3,7 @@ import { Plugin, Selection, TextSelection } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { ReplaceStep } from "prosemirror-transform";
 
-import { Subscriber, ScreenPosition, BasePluginState } from "../types";
+import { Subscriber, ScreenPosition, BasePluginState } from "../../types";
 
 const DICT = [
   "donkey",

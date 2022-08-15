@@ -11,7 +11,7 @@ import {
   SubscriberCallback,
   Subscriber,
   PluginFactory
-} from "../types";
+} from "../../types";
 
 function pluginWirhSubscribersFactory(pluginFactory: PluginFactory) {
   const subscribers: Subscriber[] = [];
