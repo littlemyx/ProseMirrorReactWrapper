@@ -38,7 +38,7 @@ class LocalDataProvider implements DataProvider {
       if (this.localDictionary[token]) {
         resolve(this.localDictionary[token]);
       } else {
-        // Simulate the network request
+        // Emulating the network request
         this.timerId = setTimeout(() => {
           this.timerId = null;
 

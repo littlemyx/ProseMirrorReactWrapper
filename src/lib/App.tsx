@@ -37,9 +37,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <div className="ProseMirrorContainer">
-        <Editor className="ProseMirror" plugins={plugins.current} />
-      </div>
+      <Editor className="ProseMirror" plugins={plugins.current} />
       <Popup subscribeToPluginChanges={subscribeToAllPlugins} />
     </div>
   );

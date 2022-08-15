@@ -14,16 +14,18 @@ function createCorrectionFunction(
   mark?: Mark
 ) {
   return (correction: string) => {
-    let tr = view.state.tr.replaceWith(
+    let transaction = view.state.tr.replaceWith(
       from,
       to,
       view.state.schema.text(correction, mark)
     );
-    const step = tr.steps[0] as ReplaceStep;
+    const step = transaction.steps[0] as ReplaceStep;
     const map = step.getMap();
     const stepTo = map.map(step.to, 1);
-    tr = tr.setSelection(TextSelection.create(tr.doc, stepTo));
-    view.dispatch(tr);
+    transaction = transaction.setSelection(
+      TextSelection.create(transaction.doc, stepTo)
+    );
+    view.dispatch(transaction);
     view.focus();
   };
 }
@@ -115,8 +117,10 @@ function createAutocompletePlugin(
           }
 
           return true;
+        } else {
+          hide();
+          return false;
         }
-        return false;
       },
       handleClick() {
         hide();

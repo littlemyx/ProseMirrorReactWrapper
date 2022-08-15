@@ -39,7 +39,9 @@ const Editor = ({ plugins, className = null }: EditorProps) => {
   const [state, setState] = useProseMirror(opts.current);
 
   return (
-    <ProseMirror className={className} state={state} onChange={setState} />
+    <div className="ProseMirrorContainer">
+      <ProseMirror className={className} state={state} onChange={setState} />
+    </div>
   );
 };
 
