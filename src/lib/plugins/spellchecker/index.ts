@@ -9,7 +9,7 @@ import {
 import { EditorView } from "prosemirror-view";
 import { ReplaceStep } from "prosemirror-transform";
 
-import { SubscriberCallback, Subscriber, BasePluginState } from "../../types";
+import { Subscriber, BasePluginState } from "../../types";
 
 import "./index.css";
 

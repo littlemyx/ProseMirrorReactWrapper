@@ -113,7 +113,7 @@ function createAutocompletePlugin(subscribers: Subscriber[], hide: () => void) {
 
             const screenPos: ScreenPosition = {
               x: cursorViewPortPosition.left,
-              y: cursorViewPortPosition.top + 10
+              y: cursorViewPortPosition.bottom - 4
             };
 
             const suggestions = getSuggestions(word);

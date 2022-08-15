@@ -1,15 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { EditorState } from "prosemirror-state";
-
-import {
-  SubscribHandler,
-  SubscriberCallback,
-  Subscriber,
-  ScreenPosition,
-  PopupState
-} from "../../types";
-
 import "./index.css";
+
+import React, { useEffect, useState } from "react";
+
+import { SubscribHandler, PopupState } from "../../types";
+
+import View from "./View";
 
 interface Props {
   subscribeToPluginChanges: SubscribHandler;
@@ -64,13 +59,11 @@ const Popup = ({ subscribeToPluginChanges }: Props) => {
 
   return (
     isVisible && (
-      <div className="popup" onClick={clickHandler}>
-        {suggestions.map(suggestion => (
-          <option value={suggestion} key={suggestion} className="popupItem">
-            {suggestion}
-          </option>
-        ))}
-      </div>
+      <View
+        clickHandler={clickHandler}
+        position={screenPos}
+        items={suggestions}
+      />
     )
   );
 };
