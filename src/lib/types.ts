@@ -15,7 +15,7 @@ export interface PopupState {
   isVisible: boolean;
   word?: string;
   screenPos?: ScreenPosition;
-  suggestions?: string[];
+  list?: string[];
   clickHandler?: (correction: string) => void;
 }
 
