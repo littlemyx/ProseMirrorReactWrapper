@@ -5,32 +5,7 @@ import { ReplaceStep } from "prosemirror-transform";
 
 import { Subscriber, ScreenPosition, BasePluginState } from "../../types";
 
-const DICT = [
-  "donkey",
-  "dolphin",
-  "dog",
-  "zebra",
-  "snake",
-  "snail",
-  "sparrow",
-  "spider",
-  "shark",
-  "lion",
-  "lobster",
-  "lizard",
-  "lama",
-  "locust",
-  "cat",
-  "rabbit",
-  "giraffi",
-  "horse"
-];
-
-function getSuggestions(prefix: string) {
-  return DICT.filter(
-    key => key.length > prefix.length && key.startsWith(prefix.toLowerCase())
-  );
-}
+import LocalDataProvider, { DataProvider } from "./dataProvider";
 
 function createCorrectionFunction(
   view: EditorView,
@@ -53,12 +28,15 @@ function createCorrectionFunction(
   };
 }
 
-function createAutocompletePlugin(subscribers: Subscriber[], hide: () => void) {
+function createAutocompletePlugin(
+  subscribers: Subscriber[],
+  hide: () => void, // TODO need to change to api with generic functions,
+  dataProvider: DataProvider = new LocalDataProvider()
+) {
   return new Plugin<BasePluginState>({
     state: {
       init() {
         return {
-          lastWord: "",
           ...this.spec.state
         };
       },
@@ -113,27 +91,27 @@ function createAutocompletePlugin(subscribers: Subscriber[], hide: () => void) {
 
             const screenPos: ScreenPosition = {
               x: cursorViewPortPosition.left,
-              y: cursorViewPortPosition.bottom - 4
+              y: cursorViewPortPosition.bottom + 4
             };
 
-            const suggestions = getSuggestions(word);
-
-            if (suggestions.length) {
-              subscribers.forEach(({ callback }) => {
-                callback({
-                  isVisible: true,
-                  word,
-                  screenPos,
-                  suggestions,
-                  clickHandler: createCorrectionFunction(
-                    view,
-                    linkTo - word.length,
-                    linkTo,
-                    node.marks
-                  )
+            dataProvider.requestData(word).then(results => {
+              if (results.length) {
+                subscribers.forEach(({ callback }) => {
+                  callback({
+                    isVisible: true,
+                    word,
+                    screenPos,
+                    list: results,
+                    clickHandler: createCorrectionFunction(
+                      view,
+                      linkTo - word.length,
+                      linkTo,
+                      node.marks
+                    )
+                  });
                 });
-              });
-            }
+              }
+            });
           }
 
           return true;

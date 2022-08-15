@@ -14,13 +14,13 @@ const defaultProps: PopupState = {
   isVisible: false,
   word: "",
   screenPos: { x: 0, y: 0 },
-  suggestions: [],
+  list: [],
   clickHandler: (correction: string) => {}
 };
 
 const Popup = ({ subscribeToPluginChanges }: Props) => {
   const [
-    { isVisible, word, screenPos, suggestions, clickHandler: clickHandlerProp },
+    { isVisible, word, screenPos, list, clickHandler: clickHandlerProp },
     setState
   ] = useState<PopupState>(defaultProps);
 
@@ -32,21 +32,21 @@ const Popup = ({ subscribeToPluginChanges }: Props) => {
         isVisible: newIsVisible,
         word: newWord,
         screenPos: newScerenPos,
-        suggestions: newSuggestions,
+        list: newList,
         clickHandler: newClickHandler
       } = newProps;
       if (
         newIsVisible !== isVisible ||
         newWord !== word ||
         newScerenPos !== screenPos ||
-        newSuggestions !== suggestions ||
+        newList !== list ||
         newClickHandler !== clickHandlerProp
       ) {
         setState(newProps);
       }
     });
     return unsubscribe;
-  }, [isVisible, word, screenPos, suggestions, clickHandlerProp]);
+  }, [isVisible, word, screenPos, list, clickHandlerProp]);
 
   const clickHandler = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
@@ -59,11 +59,7 @@ const Popup = ({ subscribeToPluginChanges }: Props) => {
 
   return (
     isVisible && (
-      <View
-        clickHandler={clickHandler}
-        position={screenPos}
-        items={suggestions}
-      />
+      <View clickHandler={clickHandler} position={screenPos} items={list} />
     )
   );
 };
