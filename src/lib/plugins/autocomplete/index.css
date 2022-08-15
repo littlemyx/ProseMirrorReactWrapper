@@ -1,0 +1,7 @@
+.popup {
+  position: fixed;
+  width: 100px;
+  height: 100px;
+  background-color: gray;
+  border: 1px solid black;
+}

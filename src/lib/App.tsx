@@ -26,7 +26,7 @@ import {
 import cut from "./cut";
 
 import spellcheckPlugin from "./plugins/spellchecker";
-import autocompletePlugin from "./plugins/autocomplete";
+import createAutocompletePlugin, { Popup } from "./plugins/autocomplete";
 
 function cmdItem(cmd: Command, options: Partial<MenuItemSpec>) {
   const passedOptions: MenuItemSpec = {
@@ -161,6 +161,8 @@ const mySchema = new Schema({
   marks: schema.spec.marks
 });
 
+const { plugin: autocompletePlugin, subscribe } = createAutocompletePlugin();
+
 const opts: Parameters<typeof useProseMirror>[0] = {
   schema: schema,
   // plugins: exampleSetup({ schema: mySchema })
@@ -170,7 +172,7 @@ const opts: Parameters<typeof useProseMirror>[0] = {
       content: buildMenuItems(schema).fullMenu
     }),
     spellcheckPlugin(),
-    autocompletePlugin(),
+    autocompletePlugin,
 
     // history(),
     keymap({
@@ -195,6 +197,7 @@ const App = () => {
           onChange={setState}
         />
       </div>
+      <Popup subscribeToPluginChanges={subscribe} />
     </div>
   );
 };

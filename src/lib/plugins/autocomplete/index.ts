@@ -1,5 +1,5 @@
-import tabHandler from "./command";
+import Popup from "./popup";
 
 export { default } from "./autocomplete";
 
-export { tabHandler };
+export { Popup };
