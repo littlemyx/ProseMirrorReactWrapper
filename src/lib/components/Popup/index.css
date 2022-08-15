@@ -1,0 +1,14 @@
+.popup {
+  width: 100px;
+  height: 100px;
+  background-color: gray;
+  border: 1px solid black;
+}
+
+.popupItem {
+  cursor: pointer;
+}
+
+.popupAnchor {
+  position: fixed;
+}
