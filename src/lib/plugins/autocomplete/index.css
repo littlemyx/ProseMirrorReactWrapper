@@ -5,3 +5,7 @@
   background-color: gray;
   border: 1px solid black;
 }
+
+.popupItem {
+  cursor: pointer;
+}

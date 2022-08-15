@@ -25,8 +25,11 @@ import {
 
 import cut from "./cut";
 
-import spellcheckPlugin from "./plugins/spellchecker";
+import createSpellcheckPlugin from "./plugins/spellchecker";
 import createAutocompletePlugin, { Popup } from "./plugins/autocomplete";
+import pluginWirhSubscribersFactory from "./plugins/helpers";
+
+import { SubscriberCallback } from "./plugins/types";
 
 function cmdItem(cmd: Command, options: Partial<MenuItemSpec>) {
   const passedOptions: MenuItemSpec = {
@@ -161,7 +164,11 @@ const mySchema = new Schema({
   marks: schema.spec.marks
 });
 
-const { plugin: autocompletePlugin, subscribe } = createAutocompletePlugin();
+const { plugin: autocompletePlugin, subscribe: subscribeToAutocompleteEvent } =
+  pluginWirhSubscribersFactory(createAutocompletePlugin);
+
+const { plugin: spellcheckerPlugin, subscribe: subscribeToSpellcheckEvent } =
+  pluginWirhSubscribersFactory(createSpellcheckPlugin);
 
 const opts: Parameters<typeof useProseMirror>[0] = {
   schema: schema,
@@ -171,7 +178,7 @@ const opts: Parameters<typeof useProseMirror>[0] = {
       floating: true,
       content: buildMenuItems(schema).fullMenu
     }),
-    spellcheckPlugin(),
+    spellcheckerPlugin,
     autocompletePlugin,
 
     // history(),
@@ -187,6 +194,16 @@ const opts: Parameters<typeof useProseMirror>[0] = {
 
 const App = () => {
   const [state, setState] = useProseMirror(opts);
+  const subscribe = (callback: SubscriberCallback) => {
+    const unsubscribeToAutocompleteEvent =
+      subscribeToAutocompleteEvent(callback);
+    const unsubscribeToSpellcheckEvent = subscribeToSpellcheckEvent(callback);
+
+    return () => {
+      unsubscribeToAutocompleteEvent();
+      unsubscribeToSpellcheckEvent();
+    };
+  };
 
   return (
     <div className="App">

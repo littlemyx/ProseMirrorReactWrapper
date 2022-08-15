@@ -7,7 +7,7 @@ import {
   Subscriber,
   ScreenPosition,
   PopupState
-} from "./types";
+} from "../types";
 
 import "./index.css";
 
@@ -43,14 +43,12 @@ const Popup = ({ subscribeToPluginChanges }: Props) => {
 
   return (
     isVisible && (
-      <div className="popup">
-        <select multiple size={suggestions.length} onClick={clickHandler}>
-          {suggestions.map(suggestion => (
-            <option value={suggestion} key={suggestion}>
-              {suggestion}
-            </option>
-          ))}
-        </select>
+      <div className="popup" onClick={clickHandler}>
+        {suggestions.map(suggestion => (
+          <option value={suggestion} key={suggestion} className="popupItem">
+            {suggestion}
+          </option>
+        ))}
       </div>
     )
   );

@@ -1,23 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Decoration, DecorationSet } from "prosemirror-view";
 import { Mark } from "prosemirror-model";
-import {
-  Plugin,
-  Selection,
-  TextSelection,
-  Transaction,
-  EditorState,
-  PluginKey
-} from "prosemirror-state";
+import { Plugin, Selection, TextSelection } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { ReplaceStep } from "prosemirror-transform";
 
-import {
-  SubscribHandler,
-  SubscriberCallback,
-  Subscriber,
-  ScreenPosition
-} from "./types";
+import { Subscriber, ScreenPosition, BasePluginState } from "../types";
 
 const DICT = [
   "donkey",
@@ -67,41 +53,8 @@ function createCorrectionFunction(
   };
 }
 
-interface IPluginState {
-  init: (
-    this: Plugin<IPluginState, any>,
-    config: { [key: string]: any },
-    instance: EditorState<any>
-  ) => IPluginState;
-  apply: (
-    this: Plugin<IPluginState, any>,
-    tr: Transaction<any>,
-    value: IPluginState,
-    oldState: EditorState<any>,
-    newState: EditorState<any>
-  ) => IPluginState;
-}
-
-function createAutocompletePlugin() {
-  const subscribers: Subscriber[] = [];
-
-  const subscribe: SubscribHandler = (callback: SubscriberCallback) => {
-    const id = new Date().getTime();
-    subscribers.push({ id, callback });
-
-    return () => {
-      subscribers.splice(
-        subscribers.findIndex(s => s.id === id),
-        1
-      );
-    };
-  };
-
-  const hide = () => {
-    subscribers.forEach(({ callback }) => callback({ isVisible: false }));
-  };
-
-  const plugin = new Plugin<IPluginState>({
+function createAutocompletePlugin(subscribers: Subscriber[], hide: () => void) {
+  return new Plugin<BasePluginState>({
     state: {
       init() {
         return {
@@ -109,7 +62,7 @@ function createAutocompletePlugin() {
           ...this.spec.state
         };
       },
-      apply(tr, prevPluginState, oldState, state) {
+      apply() {
         hide();
 
         return {
@@ -187,63 +140,12 @@ function createAutocompletePlugin() {
         }
         return false;
       },
-      handleClick(view: EditorView, pos: number, event: MouseEvent) {
-        // sboxHide(getSbox());
+      handleClick() {
         hide();
-        return false;
-      },
-      handleTextInput(
-        view: EditorView,
-        from: number,
-        to: number,
-        text: string
-      ) {
-        // Suggest only in the end of text
-        // if (view.state.doc.content.size - 1 === from) {
-        //   sync(
-        //     function () {
-        //       const { lastWord } = this.getState(view.state);
-        //       const correction = DICT[lastWord];
-        //       if (correction !== undefined) {
-        //         const node = view.state.schema.text(
-        //           correction,
-        //           view.state.schema.marks.strong.create()
-        //         );
-
-        //         // Со вставкой текста постоянно происходит какая-то оказия
-        //         let tr = view.state.tr.insert(view.state.selection.from, node);
-
-        //         tr = tr.setSelection(
-        //           TextSelection.create(tr.doc, view.state.selection.from)
-        //         );
-
-        //         view.dispatch(tr);
-        //       }
-        //     }.bind(this)
-        //   );
-        // }
-
         return false;
       }
     }
   });
-
-  return { plugin, subscribe };
 }
-
-// TODO: this is a hack to get the plugin to work with delayed updates
-const sync = (function () {
-  let timerId: ReturnType<typeof setTimeout> | null = null;
-  return function (callback: () => void) {
-    if (timerId) {
-      clearTimeout(timerId);
-    }
-
-    timerId = setTimeout(() => {
-      clearTimeout(timerId);
-      callback();
-    }, 1000);
-  };
-})();
 
 export default createAutocompletePlugin;
