@@ -3,14 +3,17 @@ import { Plugin, Selection, TextSelection } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { ReplaceStep } from "prosemirror-transform";
 
-import { Subscriber, ScreenPosition, BasePluginState } from "../../types";
+import { ScreenPosition } from "../../types";
+
+import { AutocompletePluginState, SelectedRange } from "./types";
 
 import LocalDataProvider, { DataProvider } from "./dataProvider";
 
+import key from "./key";
+
 function createCorrectionFunction(
   view: EditorView,
-  from: number,
-  to: number,
+  { from, to }: SelectedRange,
   mark?: Mark
 ) {
   return (correction: string) => {
@@ -25,28 +28,58 @@ function createCorrectionFunction(
     transaction = transaction.setSelection(
       TextSelection.create(transaction.doc, stepTo)
     );
+    transaction.setMeta(key, {
+      isPopupVisible: false
+    });
     view.dispatch(transaction);
     view.focus();
   };
 }
 
 function createAutocompletePlugin(
-  subscribers: Subscriber[],
-  hide: () => void, // TODO need to change to api with generic functions,
   dataProvider: DataProvider = new LocalDataProvider()
 ) {
-  return new Plugin<BasePluginState>({
+  return new Plugin<AutocompletePluginState>({
+    key,
+    view(view) {
+      (view.dom as HTMLDivElement).spellcheck = false;
+      const pluginKey = this.key;
+      return {
+        update(editor) {
+          const nextPluginState = pluginKey.getState(editor.state);
+        }
+      };
+    },
     state: {
       init() {
         return {
+          docChanged: false,
+          isPopupVisible: false,
+          screenPosition: null,
+          clickHandler: null,
+          selectedRange: null,
+          candidates: [],
+          cursorDeco: null,
           ...this.spec.state
         };
       },
-      apply() {
-        hide();
+      apply(tr, prev) {
+        const meta = tr.getMeta(this.spec.key);
+
+        const isPopupVisible = meta?.isPopupVisible ?? prev.isPopupVisible;
+        const selectedRange = meta?.selectedRange ?? prev.selectedRange;
+        const screenPosition = meta?.screenPosition ?? prev.screenPosition;
+        const clickHandler = meta?.clickHandler ?? prev.clickHandler;
+        const candidates = meta?.candidates ?? prev.candidates;
 
         return {
-          ...this.spec.state
+          ...prev,
+          docChanged: tr.docChanged,
+          isPopupVisible,
+          screenPosition,
+          clickHandler,
+          candidates,
+          selectedRange
         };
       }
     },
@@ -91,39 +124,42 @@ function createAutocompletePlugin(
 
             const cursorViewPortPosition = view.coordsAtPos(cursorPositions);
 
-            const screenPos: ScreenPosition = {
+            const screenPosition: ScreenPosition = {
               x: cursorViewPortPosition.left,
               y: cursorViewPortPosition.bottom + 4
             };
 
+            const range: SelectedRange = {
+              from: linkTo - word.length,
+              to: linkTo
+            };
+
             dataProvider.requestData(word).then(results => {
               if (results.length) {
-                subscribers.forEach(({ callback }) => {
-                  callback({
-                    isVisible: true,
-                    word,
-                    screenPos,
-                    list: results,
+                view.dispatch(
+                  view.state.tr.setMeta(this.spec.key, {
+                    isPopupVisible: true,
+                    screenPosition,
+                    candidates: results,
                     clickHandler: createCorrectionFunction(
                       view,
-                      linkTo - word.length,
-                      linkTo,
+                      range,
                       node.marks
                     )
-                  });
-                });
+                  })
+                );
               }
             });
           }
 
           return true;
         } else {
-          hide();
+          // hide();
           return false;
         }
       },
       handleClick() {
-        hide();
+        // hide();
         return false;
       }
     }

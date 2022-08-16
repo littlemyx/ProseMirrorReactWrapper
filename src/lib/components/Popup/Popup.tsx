@@ -1,8 +1,8 @@
 import "./index.css";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-import { SubscribHandler, PopupState, ScreenPosition } from "../../types";
+import { ScreenPosition } from "../../types";
 
 import View from "./View";
 
@@ -23,8 +23,8 @@ const Popup = ({
     const target = event.target as HTMLElement;
 
     if (target.tagName === "OPTION") {
-      const correction = target.innerText;
-      clickHandlerProp(correction);
+      const value = target.innerText;
+      clickHandlerProp(value);
     }
   };
 

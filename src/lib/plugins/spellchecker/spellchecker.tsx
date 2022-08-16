@@ -1,17 +1,15 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Decoration, DecorationSet } from "prosemirror-view";
-import {
-  Plugin,
-  TextSelection,
-  Transaction,
-  EditorState,
-  PluginKey
-} from "prosemirror-state";
+import { Plugin, TextSelection, EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
-import { ReplaceStep } from "prosemirror-transform";
 import { Node } from "prosemirror-model";
 
-import { Word, ErrorMap, AutocompletePluginState } from "./types";
+import {
+  Word,
+  ErrorMap,
+  SpellcheckerPluginState,
+  SelectedRange
+} from "./types";
 
 import key from "./key";
 
@@ -117,16 +115,25 @@ const DICT = [
   "horse"
 ];
 
-function createCorrectionFunction(view: EditorView, deco: Decoration) {
+function createCorrectionFunction(
+  view: EditorView,
+  { from, to }: SelectedRange
+) {
   return (correction: string) => {
-    let tr = view.state.tr.replaceWith(
-      deco.from,
-      deco.to,
+    let transaction = view.state.tr.replaceWith(
+      from,
+      to,
       view.state.schema.text(correction)
     );
-    let $newPos = tr.doc.resolve(tr.mapping.map(deco.from + correction.length));
-    tr = tr.setSelection(new TextSelection($newPos, $newPos));
-    view.dispatch(tr);
+    const $newPos = transaction.doc.resolve(
+      transaction.mapping.map(from + correction.length)
+    );
+    transaction = transaction.setSelection(new TextSelection($newPos, $newPos));
+    transaction.setMeta(key, {
+      isPopupVisible: false
+    });
+    view.dispatch(transaction);
+
     view.focus();
   };
 }
@@ -147,7 +154,7 @@ const debouncedCall = (function () {
 })();
 
 function createAutocompletePlugin() {
-  return new Plugin<AutocompletePluginState>({
+  return new Plugin<SpellcheckerPluginState>({
     key,
     view(view) {
       (view.dom as HTMLDivElement).spellcheck = false;
@@ -155,6 +162,7 @@ function createAutocompletePlugin() {
       return {
         update(editor) {
           const nextPluginState = pluginKey.getState(editor.state);
+
           if (nextPluginState.docChanged) {
             debouncedCall(() => {
               const errors = lint(editor.state.doc);
@@ -182,7 +190,8 @@ function createAutocompletePlugin() {
           decoration: DecorationSet.empty,
           errors: [],
           errorMap: {},
-          screenPositios: null,
+          screenPosition: null,
+          clickHandler: null,
           selectedRange: null,
           cursorDeco: null,
           ...this.spec.state
@@ -196,7 +205,8 @@ function createAutocompletePlugin() {
         const isPopupVisible = meta?.isPopupVisible ?? prev.isPopupVisible;
         const errorMap = meta?.errorMap ?? prev.errorMap;
         const selectedRange = meta?.selectedRange ?? prev.selectedRange;
-        const screenPositios = meta?.screenPositios ?? prev.screenPositios;
+        const screenPosition = meta?.screenPosition ?? prev.screenPosition;
+        const clickHandler = meta?.clickHandler ?? prev.clickHandler;
 
         return {
           ...prev,
@@ -204,7 +214,8 @@ function createAutocompletePlugin() {
           decoration,
           errors,
           isPopupVisible,
-          screenPositios,
+          screenPosition,
+          clickHandler,
           selectedRange,
           errorMap
         };
@@ -215,21 +226,7 @@ function createAutocompletePlugin() {
         const { decoration } = this.getState(state);
         return decoration;
       },
-      // handleClick(view: EditorView, pos: number, event: MouseEvent) {
-      //   const { $cursor } = view.state.selection as TextSelection;
-
-      //   const { pos: cursorPositions } = $cursor ?? {};
-      //   console.log(cursorPositions);
-      //   view.dispatch(
-      //     view.state.tr.setMeta(this.spec.key, {
-      //       isPopupVisible: false
-      //     })
-      //   );
-      //   return false;
-      // },
-      // Потому что contextmenu
       handleClick(view: EditorView, pos: number, event: MouseEvent) {
-        //@ts-ignore
         if (!event.altKey) {
           view.dispatch(
             view.state.tr.setMeta(this.spec.key, {
@@ -250,23 +247,22 @@ function createAutocompletePlugin() {
           if (!token) return; // sanity
 
           const coords = view.coordsAtPos(pos);
-          const screenPositios = {
+          const screenPosition = {
             x: event.pageX,
             y: coords.bottom - 4
           };
 
-          // const results: string[] = suggester(token);
+          const range: SelectedRange = { from: from + 1, to: to + 1 };
 
-          // if (results.length) {
           view.dispatch(
             view.state.tr.setMeta(this.spec.key, {
               isPopupVisible: true,
-              screenPositios,
-              // Because we have added style and it enlarged the block. A bit hacky.
-              selectedRange: { from: from + 1, to: to + 1 }
+              screenPosition,
+              clickHandler: createCorrectionFunction(view, range),
+              // Я понимаю что тут видимо как-то нужно использовать map, но не очень понимаю как именно
+              selectedRange: range
             })
           );
-          // }
 
           event.preventDefault();
           return true;

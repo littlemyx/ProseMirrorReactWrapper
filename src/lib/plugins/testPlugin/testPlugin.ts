@@ -1,7 +1,7 @@
 import { Mark } from "prosemirror-model";
 import { Plugin, Selection, TextSelection, PluginKey } from "prosemirror-state";
 
-import { Subscriber, ScreenPosition, BasePluginState } from "../../types";
+import { ScreenPosition, BasePluginState } from "../../types";
 
 interface State extends BasePluginState {
   changed: boolean;
