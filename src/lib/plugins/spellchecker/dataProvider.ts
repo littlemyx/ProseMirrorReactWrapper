@@ -46,7 +46,9 @@ const suggester = (token: string) => {
   return Array.from(result);
 };
 
-class LocalDataProvider implements DataProvider<Word[], Error[]> {
+export default class LocalDataProvider
+  implements DataProvider<Word[], Error[]>
+{
   private abortionController: LocalDataProviderAbortionController = {
     timerId: null,
     abort: function () {
@@ -67,6 +69,7 @@ class LocalDataProvider implements DataProvider<Word[], Error[]> {
       function (resolve: any) {
         this.abortionController.timerId = setTimeout(function () {
           const errors: Error[] = [];
+
           for (let i = 0; i < words.length; i++) {
             const word = words[i];
             if (!DICTIONARY.includes(word.text)) {
@@ -80,6 +83,3 @@ class LocalDataProvider implements DataProvider<Word[], Error[]> {
     );
   }
 }
-
-export default LocalDataProvider;
-export { DataProvider };

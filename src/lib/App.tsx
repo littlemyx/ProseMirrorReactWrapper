@@ -1,6 +1,3 @@
-// import "prosemirror-view/style/prosemirror.css";
-// import "prosemirror-menu/style/menu.css";
-
 import React, { useRef } from "react";
 
 import createSpellcheckPlugin from "./plugins/spellchecker";
