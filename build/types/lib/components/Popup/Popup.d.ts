@@ -1,8 +1,11 @@
 /// <reference types="react" />
 import "./index.css";
-import { SubscribHandler } from "../../types";
+import { ScreenPosition } from "../../types";
 interface Props {
-    subscribeToPluginChanges: SubscribHandler;
+    isVisible: boolean;
+    items: string[];
+    screenPosition: ScreenPosition;
+    clickHandler: (correction: string) => void;
 }
-declare const Popup: ({ subscribeToPluginChanges }: Props) => JSX.Element;
+declare const Popup: ({ isVisible, screenPosition, items, clickHandler: clickHandlerProp }: Props) => JSX.Element;
 export default Popup;
