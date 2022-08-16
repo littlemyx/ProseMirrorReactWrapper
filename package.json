@@ -7,7 +7,6 @@
   "scripts": {
     "start": "webpack serve --config webpack.config.demo.js",
     "build": "webpack && tsc",
-    "tsc": "tsc",
     "build:demo": "webpack --config webpack.config.demo.js",
     "test": "jest --silent",
     "coverage": "npm run test -- --coverage",
@@ -51,7 +50,6 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-popper": "^2.3.0",
-    "react-scripts": "4.0.0",
     "use-prosemirror": "1.2.1"
   },
   "devDependencies": {
@@ -63,6 +61,7 @@
     "@babel/preset-env": "^7.18.10",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.18.6",
+    "@playwright/test": "^1.25.0",
     "@types/jest": "^28.1.6",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",

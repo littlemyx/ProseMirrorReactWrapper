@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */ // TODO do we need this?
 import "./index.css";
 import { DecorationSet } from "prosemirror-view";
-import { Plugin, EditorState } from "prosemirror-state";
+import {
+  Plugin,
+  EditorState,
+  TextSelection,
+  Selection
+} from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 
 import { SelectedRange } from "../types";
@@ -65,16 +70,20 @@ function createAutocompletePlugin(
           ...this.spec.state
         };
       },
-      apply(tr, prev) {
+
+      apply(tr, prev, oldState, newState) {
         const meta = tr.getMeta(this.spec.key);
 
-        const decoration = meta?.decorations ?? prev.decoration;
+        const decoration = tr.docChanged
+          ? DecorationSet.empty
+          : meta?.decorations ?? prev.decoration;
         const errors = meta?.errors ?? prev.errors;
         const errorMap = meta?.errorMap ?? prev.errorMap;
         const selectedRange = meta?.selectedRange ?? prev.selectedRange;
-        const isPopupVisible = errorMap[selectedRange]
-          ? meta?.isPopupVisible ?? prev.isPopupVisible
-          : false;
+        const isPopupVisible =
+          selectedRange && errorMap[`${selectedRange.from}-${selectedRange.to}`]
+            ? meta?.isPopupVisible ?? prev.isPopupVisible
+            : false;
 
         const screenPosition = meta?.screenPosition ?? prev.screenPosition;
         const clickHandler = meta?.clickHandler ?? prev.clickHandler;
@@ -97,6 +106,18 @@ function createAutocompletePlugin(
         const { decoration } = this.getState(state);
         return decoration;
       },
+      handleKeyDown(view: EditorView, event: KeyboardEvent) {
+        const currectState = this.spec.key.getState(view.state);
+
+        if (currectState.isPopupVisible) {
+          view.dispatch(
+            view.state.tr.setMeta(this.spec.key, {
+              isPopupVisible: false
+            })
+          );
+        }
+        return false;
+      },
       handleClick(view: EditorView, pos: number, event: MouseEvent) {
         if (!event.altKey) {
           view.dispatch(
@@ -105,6 +126,10 @@ function createAutocompletePlugin(
             })
           );
         } else {
+          const {
+            $cursor: { pos: endOfDocPosition }
+          } = Selection.atEnd(view.state.doc) as TextSelection;
+
           const { decoration } = this.getState(view.state);
           const deco = decoration.find(pos, pos)[0];
           if (!deco) return;
