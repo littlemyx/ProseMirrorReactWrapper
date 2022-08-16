@@ -1,7 +1,6 @@
-import { Mark } from "prosemirror-model";
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Plugin, Selection, TextSelection } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
-import { ReplaceStep } from "prosemirror-transform";
 
 import { ScreenPosition } from "../../types";
 
@@ -53,7 +52,7 @@ function createAutocompletePlugin(
       }
     },
     props: {
-      handleClick(view: EditorView, pos: number, event: MouseEvent) {
+      handleClick(view: EditorView) {
         view.dispatch(
           view.state.tr.setMeta(this.spec.key, {
             isPopupVisible: false
@@ -62,16 +61,22 @@ function createAutocompletePlugin(
         return false;
       },
       handleKeyDown(view: EditorView, event: KeyboardEvent) {
+        const currectState = this.spec.key.getState(view.state);
+
         if (event.key !== "Tab") {
-          view.dispatch(
-            view.state.tr.setMeta(this.spec.key, {
-              isPopupVisible: false
-            })
-          );
+          if (currectState.isPopupVisible) {
+            view.dispatch(
+              view.state.tr.setMeta(this.spec.key, {
+                isPopupVisible: false
+              })
+            );
+          }
         } else {
           const {
             $cursor: { pos: endOfDocPosition }
           } = Selection.atEnd(view.state.doc) as TextSelection;
+
+          // TODO extract to function
 
           const {
             $cursor: { pos: cursorPositions }
