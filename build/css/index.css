@@ -1,6 +1,6 @@
 /*!
  * 
- *   prose-mirror-react-wrapper v1.0.7
+ *   prose-mirror-react-wrapper v1.0.8
  *   https://github.com/littlemyx/ProseMirrorReactWrapper
  *
  *   Copyright (c) Andrei Mukhin (https://631am.com) and project contributors.
