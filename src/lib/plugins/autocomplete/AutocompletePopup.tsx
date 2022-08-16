@@ -4,7 +4,7 @@ import { EditorState } from "prosemirror-state";
 import Popup from "../../components/Popup";
 
 import key from "./key";
-import { SpellcheckerPluginState } from "./types";
+import { AutocompletePluginState } from "./types";
 
 interface Props {
   state: EditorState;
@@ -13,19 +13,16 @@ interface Props {
 const SpellcheckerPopup = ({ state }: Props) => {
   const {
     isPopupVisible: isVisible,
-    selectedRange,
-    screenPosition,
     clickHandler = () => {},
-    errorMap
-  } = key.getState(state) as SpellcheckerPluginState;
-
-  const keyForErrorMap = `${selectedRange?.from}-${selectedRange?.to}`;
+    screenPosition,
+    candidates
+  } = key.getState(state) as AutocompletePluginState;
 
   return (
     <Popup
       isVisible={isVisible}
       screenPosition={screenPosition}
-      items={errorMap[keyForErrorMap] ?? []}
+      items={candidates}
       clickHandler={clickHandler}
     />
   );

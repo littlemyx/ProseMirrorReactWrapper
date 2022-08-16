@@ -3,56 +3,72 @@ import { Plugin, Selection, TextSelection } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { ReplaceStep } from "prosemirror-transform";
 
-import { Subscriber, ScreenPosition, BasePluginState } from "../../types";
+import { ScreenPosition } from "../../types";
 
-import LocalDataProvider, { DataProvider } from "./dataProvider";
+import { SelectedRange } from "../types";
 
-function createCorrectionFunction(
-  view: EditorView,
-  from: number,
-  to: number,
-  mark?: Mark
-) {
-  return (correction: string) => {
-    let transaction = view.state.tr.replaceWith(
-      from,
-      to,
-      view.state.schema.text(correction, mark)
-    );
-    const step = transaction.steps[0] as ReplaceStep;
-    const map = step.getMap();
-    const stepTo = map.map(step.to, 1);
-    transaction = transaction.setSelection(
-      TextSelection.create(transaction.doc, stepTo)
-    );
-    view.dispatch(transaction);
-    view.focus();
-  };
-}
+import { AutocompletePluginState } from "./types";
+import LocalDataProvider from "./dataProvider";
+import type { DataProvider } from "../dataProvider";
+import { createCorrectionFunction } from "./helpers";
+import key from "./key";
 
 function createAutocompletePlugin(
-  subscribers: Subscriber[],
-  hide: () => void, // TODO need to change to api with generic functions,
-  dataProvider: DataProvider = new LocalDataProvider()
+  dataProvider: DataProvider<string, string[]> = new LocalDataProvider()
 ) {
-  return new Plugin<BasePluginState>({
+  return new Plugin<AutocompletePluginState>({
+    key,
+
     state: {
       init() {
         return {
+          docChanged: false,
+          isPopupVisible: false,
+          screenPosition: null,
+          clickHandler: null,
+          selectedRange: null,
+          candidates: [],
+          cursorDeco: null,
           ...this.spec.state
         };
       },
-      apply() {
-        hide();
+      apply(tr, prev) {
+        const meta = tr.getMeta(this.spec.key);
+
+        const isPopupVisible = meta?.isPopupVisible ?? prev.isPopupVisible;
+        const selectedRange = meta?.selectedRange ?? prev.selectedRange;
+        const screenPosition = meta?.screenPosition ?? prev.screenPosition;
+        const clickHandler = meta?.clickHandler ?? prev.clickHandler;
+        const candidates = meta?.candidates ?? prev.candidates;
 
         return {
-          ...this.spec.state
+          ...prev,
+          docChanged: tr.docChanged,
+          isPopupVisible,
+          screenPosition,
+          clickHandler,
+          candidates,
+          selectedRange
         };
       }
     },
     props: {
+      handleClick(view: EditorView, pos: number, event: MouseEvent) {
+        view.dispatch(
+          view.state.tr.setMeta(this.spec.key, {
+            isPopupVisible: false
+          })
+        );
+        return false;
+      },
       handleKeyDown(view: EditorView, event: KeyboardEvent) {
-        if (event.key === "Tab") {
+        if (event.key !== "Tab") {
+          view.dispatch(
+            view.state.tr.setMeta(this.spec.key, {
+              isPopupVisible: false
+            })
+          );
+        } else {
           const {
             $cursor: { pos: endOfDocPosition }
           } = Selection.atEnd(view.state.doc) as TextSelection;
@@ -91,40 +107,36 @@ function createAutocompletePlugin(
 
             const cursorViewPortPosition = view.coordsAtPos(cursorPositions);
 
-            const screenPos: ScreenPosition = {
+            const screenPosition: ScreenPosition = {
               x: cursorViewPortPosition.left,
               y: cursorViewPortPosition.bottom + 4
             };
 
+            const range: SelectedRange = {
+              from: linkTo - word.length,
+              to: linkTo
+            };
+
             dataProvider.requestData(word).then(results => {
               if (results.length) {
-                subscribers.forEach(({ callback }) => {
-                  callback({
-                    isVisible: true,
-                    word,
-                    screenPos,
-                    list: results,
+                view.dispatch(
+                  view.state.tr.setMeta(this.spec.key, {
+                    isPopupVisible: true,
+                    screenPosition,
+                    candidates: results,
                     clickHandler: createCorrectionFunction(
                       view,
-                      linkTo - word.length,
-                      linkTo,
+                      range,
                       node.marks
                     )
-                  });
-                });
+                  })
+                );
               }
             });
           }
 
           return true;
-        } else {
-          hide();
-          return false;
         }
-      },
-      handleClick() {
-        hide();
-        return false;
       }
     }
   });

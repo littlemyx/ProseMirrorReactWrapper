@@ -1,3 +1,8 @@
+import type {
+  DataProvider,
+  DataProviderAbortionController
+} from "../dataProvider";
+
 const DICTIONARY = [
   "donkey",
   "dolphin",
@@ -19,21 +24,12 @@ const DICTIONARY = [
   "horse"
 ];
 
-interface DataProviderAbortionController {
-  abort(): void;
-}
-
 interface LocalDataProviderAbortionController
   extends DataProviderAbortionController {
   timerId: ReturnType<typeof setTimeout>;
 }
 
-interface DataProvider {
-  getAbortionControllerHandler: () => void;
-  requestData(token: string): Promise<string[]>;
-}
-
-class LocalDataProvider implements DataProvider {
+class LocalDataProvider implements DataProvider<string, string[]> {
   private localDictionary: Record<string, string[]> = {};
   private abortionController: LocalDataProviderAbortionController = {
     timerId: null,
@@ -51,26 +47,32 @@ class LocalDataProvider implements DataProvider {
   requestData(token: string) {
     this.abortionController.abort();
 
-    return new Promise<string[]>((resolve, reject) => {
-      if (this.localDictionary[token]) {
-        resolve(this.localDictionary[token]);
-      } else {
-        // Emulating the network request
-        this.abortionController.timerId = setTimeout(() => {
-          this.abortionController.timerId = null;
+    return new Promise<string[]>(
+      function (resolve: any) {
+        if (this.localDictionary[token]) {
+          resolve(this.localDictionary[token]);
+        } else {
+          // Emulating the network request
+          this.abortionController.timerId = setTimeout(
+            function () {
+              this.abortionController.timerId = null;
 
-          const results = DICTIONARY.filter(
-            key =>
-              key.length > token.length && key.startsWith(token.toLowerCase())
+              const results = DICTIONARY.filter(
+                key =>
+                  key.length > token.length &&
+                  key.startsWith(token.toLowerCase())
+              );
+
+              // Do the local caching
+              this.localDictionary[token] = results;
+
+              resolve(results);
+            }.bind(this),
+            2000
           );
-
-          // Do the local caching
-          this.localDictionary[token] = results;
-
-          resolve(results);
-        }, 2000);
-      }
-    });
+        }
+      }.bind(this)
+    );
   }
 }
 
