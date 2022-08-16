@@ -9,6 +9,8 @@ export interface Word {
   to: number;
 }
 
+export type Error = Word & { correction?: string[] };
+
 export interface ErrorMap {
   [key: string]: string[];
 }

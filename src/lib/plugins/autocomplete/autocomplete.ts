@@ -5,51 +5,20 @@ import { ReplaceStep } from "prosemirror-transform";
 
 import { ScreenPosition } from "../../types";
 
-import { AutocompletePluginState, SelectedRange } from "./types";
+import { SelectedRange } from "../types";
 
-import LocalDataProvider, { DataProvider } from "./dataProvider";
-
+import { AutocompletePluginState } from "./types";
+import LocalDataProvider from "./dataProvider";
+import type { DataProvider } from "../dataProvider";
+import { createCorrectionFunction } from "./helpers";
 import key from "./key";
 
-function createCorrectionFunction(
-  view: EditorView,
-  { from, to }: SelectedRange,
-  mark?: Mark
-) {
-  return (correction: string) => {
-    let transaction = view.state.tr.replaceWith(
-      from,
-      to,
-      view.state.schema.text(correction, mark)
-    );
-    const step = transaction.steps[0] as ReplaceStep;
-    const map = step.getMap();
-    const stepTo = map.map(step.to, 1);
-    transaction = transaction.setSelection(
-      TextSelection.create(transaction.doc, stepTo)
-    );
-    transaction.setMeta(key, {
-      isPopupVisible: false
-    });
-    view.dispatch(transaction);
-    view.focus();
-  };
-}
-
 function createAutocompletePlugin(
-  dataProvider: DataProvider = new LocalDataProvider()
+  dataProvider: DataProvider<string, string[]> = new LocalDataProvider()
 ) {
   return new Plugin<AutocompletePluginState>({
     key,
-    view(view) {
-      (view.dom as HTMLDivElement).spellcheck = false;
-      const pluginKey = this.key;
-      return {
-        update(editor) {
-          const nextPluginState = pluginKey.getState(editor.state);
-        }
-      };
-    },
+
     state: {
       init() {
         return {
@@ -84,8 +53,22 @@ function createAutocompletePlugin(
       }
     },
     props: {
+      handleClick(view: EditorView, pos: number, event: MouseEvent) {
+        view.dispatch(
+          view.state.tr.setMeta(this.spec.key, {
+            isPopupVisible: false
+          })
+        );
+        return false;
+      },
       handleKeyDown(view: EditorView, event: KeyboardEvent) {
-        if (event.key === "Tab") {
+        if (event.key !== "Tab") {
+          view.dispatch(
+            view.state.tr.setMeta(this.spec.key, {
+              isPopupVisible: false
+            })
+          );
+        } else {
           const {
             $cursor: { pos: endOfDocPosition }
           } = Selection.atEnd(view.state.doc) as TextSelection;
@@ -153,14 +136,7 @@ function createAutocompletePlugin(
           }
 
           return true;
-        } else {
-          // hide();
-          return false;
         }
-      },
-      handleClick() {
-        // hide();
-        return false;
       }
     }
   });
