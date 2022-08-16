@@ -1,7 +1,7 @@
 import { Decoration, DecorationSet } from "prosemirror-view";
 
-import { BasePluginState, SelectedRange } from "../types";
-import { ScreenPosition } from "../../types";
+import { SelectedRange } from "../types";
+import { BasePluginState, ScreenPosition } from "../../types";
 
 export interface AutocompletePluginState extends BasePluginState {
   cursorDeco: Decoration;

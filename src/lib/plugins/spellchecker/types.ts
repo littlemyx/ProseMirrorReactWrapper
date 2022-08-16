@@ -1,7 +1,7 @@
 import { Decoration, DecorationSet } from "prosemirror-view";
 
-import { ScreenPosition } from "../../types";
-import { BasePluginState, SelectedRange } from "../types";
+import { BasePluginState, ScreenPosition } from "../../types";
+import { SelectedRange } from "../types";
 
 export interface Word {
   text: string;
