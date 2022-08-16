@@ -13,6 +13,8 @@ import { menuBar } from "prosemirror-menu";
 
 import { BasePluginState } from "../../types";
 
+import { SpellcheckerPopup } from "../../plugins/spellchecker";
+
 import buildMenu from "./buildMenu";
 
 interface EditorProps {
@@ -41,6 +43,7 @@ const Editor = ({ plugins, className = null }: EditorProps) => {
   return (
     <div className="ProseMirrorContainer">
       <ProseMirror className={className} state={state} onChange={setState} />
+      <SpellcheckerPopup state={state} />
     </div>
   );
 };

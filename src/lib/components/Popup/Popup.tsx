@@ -2,52 +2,23 @@ import "./index.css";
 
 import React, { useEffect, useState } from "react";
 
-import { SubscribHandler, PopupState } from "../../types";
+import { SubscribHandler, PopupState, ScreenPosition } from "../../types";
 
 import View from "./View";
 
 interface Props {
-  subscribeToPluginChanges: SubscribHandler;
+  isVisible: boolean;
+  items: string[];
+  screenPosition: ScreenPosition;
+  clickHandler: (correction: string) => void;
 }
 
-const defaultProps: PopupState = {
-  isVisible: false,
-  word: "",
-  screenPos: { x: 0, y: 0 },
-  list: [],
-  clickHandler: (correction: string) => {}
-};
-
-const Popup = ({ subscribeToPluginChanges }: Props) => {
-  const [
-    { isVisible, word, screenPos, list, clickHandler: clickHandlerProp },
-    setState
-  ] = useState<PopupState>(defaultProps);
-
-  console.log("popup");
-
-  useEffect(() => {
-    const unsubscribe = subscribeToPluginChanges(newProps => {
-      const {
-        isVisible: newIsVisible,
-        word: newWord,
-        screenPos: newScerenPos,
-        list: newList,
-        clickHandler: newClickHandler
-      } = newProps;
-      if (
-        newIsVisible !== isVisible ||
-        newWord !== word ||
-        newScerenPos !== screenPos ||
-        newList !== list ||
-        newClickHandler !== clickHandlerProp
-      ) {
-        setState(newProps);
-      }
-    });
-    return unsubscribe;
-  }, [isVisible, word, screenPos, list, clickHandlerProp]);
-
+const Popup = ({
+  isVisible,
+  screenPosition,
+  items,
+  clickHandler: clickHandlerProp
+}: Props) => {
   const clickHandler = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
 
@@ -58,9 +29,15 @@ const Popup = ({ subscribeToPluginChanges }: Props) => {
   };
 
   return (
-    isVisible && (
-      <View clickHandler={clickHandler} position={screenPos} items={list} />
-    )
+    <>
+      {isVisible && (
+        <View
+          clickHandler={clickHandler}
+          position={screenPosition}
+          items={items}
+        />
+      )}
+    </>
   );
 };
 

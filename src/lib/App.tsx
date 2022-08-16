@@ -5,6 +5,7 @@ import React, { useRef } from "react";
 
 import createSpellcheckPlugin from "./plugins/spellchecker";
 import createAutocompletePlugin from "./plugins/autocomplete";
+import testPlugin from "./plugins/testPlugin";
 
 import pluginWirhSubscribersFactory from "./plugins/helpers";
 
@@ -33,12 +34,12 @@ const App = () => {
     };
   };
 
-  const plugins = useRef([autocompletePlugin, spellcheckerPlugin]);
+  // const plugins = useRef([autocompletePlugin, spellcheckerPlugin]);
+  const plugins = useRef([createSpellcheckPlugin()]);
 
   return (
     <div className="App">
       <Editor className="ProseMirror" plugins={plugins.current} />
-      <Popup subscribeToPluginChanges={subscribeToAllPlugins} />
     </div>
   );
 };

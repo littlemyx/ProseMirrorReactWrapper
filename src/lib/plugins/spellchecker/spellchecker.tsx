@@ -4,14 +4,97 @@ import {
   Plugin,
   TextSelection,
   Transaction,
-  EditorState
+  EditorState,
+  PluginKey
 } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { ReplaceStep } from "prosemirror-transform";
+import { Node } from "prosemirror-model";
 
-import { Subscriber, BasePluginState } from "../../types";
+import { Word, ErrorMap, AutocompletePluginState } from "./types";
+
+import key from "./key";
 
 import "./index.css";
+
+type Error = Word & { correction?: string[] };
+
+function getherAllWords(doc: Node) {
+  const words: Word[] = [];
+
+  function record(text: string, from: number, to: number) {
+    words.push({ text, from, to });
+  }
+
+  // For each node in the document
+  doc.descendants((node: Node, pos: number) => {
+    if (node.isText) {
+      const wordRegEx = /\w+/g;
+      let match = null;
+      // Scan text nodes for suspicious patterns
+      while ((match = wordRegEx.exec(node.text)))
+        record(
+          match[0],
+          doc.resolve(pos + match.index).pos,
+          doc.resolve(pos + match.index + match[0].length).pos
+        );
+    }
+  });
+
+  return words;
+}
+
+const suggester = (token: string) => {
+  const result = new Set<string>();
+  const dict = [...DICT];
+  for (let i = 1; i < token.length; i++) {
+    const char = token.slice(0, i);
+    const words = dict.filter(d => d.startsWith(char));
+    words.forEach(word => {
+      if (word.length > token.length - 2 && word.length < token.length + 2)
+        result.add(word);
+    });
+  }
+
+  return Array.from(result);
+};
+
+const checkWords = (words: Word[]): Error[] => {
+  const errors: Error[] = [];
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    if (!DICT.includes(word.text)) {
+      const candidates = suggester(word.text);
+      errors.push({ ...word, correction: candidates });
+    }
+  }
+  return errors;
+};
+
+function lint(doc: Node) {
+  const words = getherAllWords(doc);
+  const errors = checkWords(words);
+
+  return errors;
+}
+
+function createErrorMap(errors: Error[]) {
+  const map = {} as ErrorMap;
+  errors.forEach(error => {
+    const key = `${error.from}-${error.to}`;
+    map[key] = error.correction;
+  });
+
+  return map;
+}
+
+function createDecorations(errors: Word[], doc: Node) {
+  const decos: Decoration[] = [];
+  errors.forEach(prob => {
+    decos.push(Decoration.inline(prob.from, prob.to, { class: "spellError" }));
+  });
+  return DecorationSet.create(doc, decos);
+}
 
 const DICT = [
   "donkey",
@@ -34,52 +117,6 @@ const DICT = [
   "horse"
 ];
 
-const suggester = (token: string) => {
-  const result = new Set<string>();
-  const dict = [...DICT];
-  for (let i = 1; i < token.length; i++) {
-    const char = token.slice(0, i);
-    const words = dict.filter(d => d.startsWith(char));
-    words.forEach(word => {
-      if (word.length > token.length - 2 && word.length < token.length + 2)
-        result.add(word);
-    });
-  }
-
-  return Array.from(result);
-};
-
-const typo = {
-  ignore: (token: string): void => {
-    DICT.push(token);
-  },
-  suggest: (
-    arg?: any,
-    arg2?: any,
-    callback1?: () => void,
-    callback2?: (arg: any) => void
-  ): void => {},
-  check: (value: string): boolean => {
-    return DICT.includes(value);
-  }
-};
-
-function getRangeFromTransform(tr: Transaction) {
-  let trFrom, trTo;
-  for (let i = 0; i < tr.steps.length; i++) {
-    const step = tr.steps[i] as ReplaceStep;
-    const map = step.getMap();
-    const stepFrom = map.map(step.from, -1);
-    const stepTo = map.map(step.to, 1);
-    trFrom = trFrom ? map.map(trFrom, -1) : stepFrom;
-    trTo = trTo ? map.map(trTo, 1) : stepTo;
-  }
-  return {
-    trFrom,
-    trTo
-  };
-}
-
 function createCorrectionFunction(view: EditorView, deco: Decoration) {
   return (correction: string) => {
     let tr = view.state.tr.replaceWith(
@@ -94,134 +131,146 @@ function createCorrectionFunction(view: EditorView, deco: Decoration) {
   };
 }
 
-interface AutocompletePlugin extends BasePluginState {
-  decos: DecorationSet;
-  cursorDeco: Decoration;
-}
+// TODO: this is a hack to get the plugin to work with delayed updates
+const debouncedCall = (function () {
+  let timerId: ReturnType<typeof setTimeout> | null = null;
+  return function (callback: () => void, timeout = 5000) {
+    if (timerId) {
+      clearTimeout(timerId);
+    }
 
-function createAutocompletePlugin(subscribers: Subscriber[], hide: () => void) {
-  return new Plugin<AutocompletePlugin>({
+    timerId = setTimeout(() => {
+      clearTimeout(timerId);
+      callback();
+    }, timeout);
+  };
+})();
+
+function createAutocompletePlugin() {
+  return new Plugin<AutocompletePluginState>({
+    key,
     view(view) {
       (view.dom as HTMLDivElement).spellcheck = false;
-      return {};
+      const pluginKey = this.key;
+      return {
+        update(editor) {
+          const nextPluginState = pluginKey.getState(editor.state);
+          if (nextPluginState.docChanged) {
+            debouncedCall(() => {
+              const errors = lint(editor.state.doc);
+              const decorations = createDecorations(errors, editor.state.doc);
+              const errorMap = createErrorMap(errors);
+
+              editor.dispatch(
+                editor.state.tr.setMeta(pluginKey, {
+                  decorations,
+                  errors,
+                  errorMap
+                })
+              );
+            }, 2000);
+          }
+        }
+      };
     },
 
     state: {
       init() {
         return {
-          decos: DecorationSet.empty,
+          docChanged: false,
+          isPopupVisible: false,
+          decoration: DecorationSet.empty,
+          errors: [],
+          errorMap: {},
+          screenPositios: null,
+          selectedRange: null,
           cursorDeco: null,
           ...this.spec.state
         };
       },
-      apply(tr, prev, oldState, state) {
-        console.log("apply was called");
-        hide();
+      apply(tr, prev) {
+        const meta = tr.getMeta(this.spec.key);
 
-        let { decos, cursorDeco } = this.getState(oldState);
-        decos = decos.map(tr.mapping, tr.doc);
-
-        if (cursorDeco) {
-          decos = decos.add(state.doc, [cursorDeco]);
-          cursorDeco = null;
-        }
-
-        if (!tr.selection.empty || !tr.docChanged)
-          return {
-            decos,
-            cursorDeco,
-            ...this.spec.state
-          };
-
-        const { trFrom, trTo } = getRangeFromTransform(tr);
-        if (!trFrom || !trTo)
-          return {
-            decos,
-            cursorDeco,
-            ...this.spec.state
-          };
-
-        const $t = state.doc.resolve(trTo);
-        const txtFrom = $t.start();
-        const txtTo = $t.end();
-
-        const txt = state.doc.textBetween(txtFrom, txtTo, " ");
-        const reg = /\w+/g;
-        let match = null;
-        while ((match = reg.exec(txt)) != null) {
-          const token = match[0];
-          const tokenFrom = match.index;
-          const tokenTo = reg.lastIndex;
-          if (tokenTo < trFrom && tokenFrom > trTo) continue;
-          decos = decos.remove(
-            decos.find(txtFrom + tokenFrom, txtFrom + tokenTo)
-          );
-
-          if (!typo.check(match[0])) {
-            const deco = Decoration.inline(
-              txtFrom + tokenFrom,
-              txtFrom + tokenTo,
-              {
-                class: "spellError"
-              }
-            );
-            if ($t.pos == txtFrom + tokenTo) {
-              cursorDeco = deco;
-            } else {
-              decos = decos.add(state.doc, [deco]);
-            }
-          }
-        }
+        const decoration = meta?.decorations ?? prev.decoration;
+        const errors = meta?.errors ?? prev.errors;
+        const isPopupVisible = meta?.isPopupVisible ?? prev.isPopupVisible;
+        const errorMap = meta?.errorMap ?? prev.errorMap;
+        const selectedRange = meta?.selectedRange ?? prev.selectedRange;
+        const screenPositios = meta?.screenPositios ?? prev.screenPositios;
 
         return {
-          decos,
-          cursorDeco,
-          ...this.spec.state
-        }; //: decos.map(tr.mapping, tr.doc), cursorDeco }
+          ...prev,
+          docChanged: tr.docChanged,
+          decoration,
+          errors,
+          isPopupVisible,
+          screenPositios,
+          selectedRange,
+          errorMap
+        };
       }
     },
     props: {
       decorations(state: EditorState) {
-        const { decos } = this.getState(state);
-        return decos;
+        const { decoration } = this.getState(state);
+        return decoration;
       },
+      // handleClick(view: EditorView, pos: number, event: MouseEvent) {
+      //   const { $cursor } = view.state.selection as TextSelection;
+
+      //   const { pos: cursorPositions } = $cursor ?? {};
+      //   console.log(cursorPositions);
+      //   view.dispatch(
+      //     view.state.tr.setMeta(this.spec.key, {
+      //       isPopupVisible: false
+      //     })
+      //   );
+      //   return false;
+      // },
       // Потому что contextmenu
-      handleDoubleClick(view: EditorView, pos: number, event: MouseEvent) {
-        const { decos } = this.getState(view.state);
-        const deco = decos.find(pos, pos)[0];
-        if (!deco) return;
+      handleClick(view: EditorView, pos: number, event: MouseEvent) {
+        //@ts-ignore
+        if (!event.altKey) {
+          view.dispatch(
+            view.state.tr.setMeta(this.spec.key, {
+              isPopupVisible: false
+            })
+          );
+        } else {
+          const { decoration } = this.getState(view.state);
+          const deco = decoration.find(pos, pos)[0];
+          if (!deco) return;
 
-        const $f = view.state.doc.resolve(deco.from),
-          $t = view.state.doc.resolve(deco.to);
-        let token = $f.parent.textBetween(
-          deco.from - $f.start(),
-          deco.to - $f.start(),
-          " "
-        );
-        if (!token) return; // sanity
+          const $f = view.state.doc.resolve(deco.from);
+          const from = deco.from - $f.start();
+          // const from = deco.from;
+          const to = deco.to - $f.start();
+          // const to = deco.to;
+          const token = $f.parent.textBetween(from, to, " ");
+          if (!token) return; // sanity
 
-        const coords = view.coordsAtPos(pos);
-        const screenPos = {
-          x: event.pageX,
-          y: coords.bottom - 4
-        };
+          const coords = view.coordsAtPos(pos);
+          const screenPositios = {
+            x: event.pageX,
+            y: coords.bottom - 4
+          };
 
-        const results: string[] = suggester(token);
+          // const results: string[] = suggester(token);
 
-        if (results.length) {
-          subscribers.forEach(({ callback }) => {
-            callback({
-              isVisible: true,
-              word: token,
-              screenPos,
-              list: results,
-              clickHandler: createCorrectionFunction(view, deco)
-            });
-          });
+          // if (results.length) {
+          view.dispatch(
+            view.state.tr.setMeta(this.spec.key, {
+              isPopupVisible: true,
+              screenPositios,
+              // Because we have added style and it enlarged the block. A bit hacky.
+              selectedRange: { from: from + 1, to: to + 1 }
+            })
+          );
+          // }
+
+          event.preventDefault();
+          return true;
         }
-
-        event.preventDefault();
-        return true;
       }
     }
   });

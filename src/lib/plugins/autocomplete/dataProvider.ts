@@ -19,28 +19,45 @@ const DICTIONARY = [
   "horse"
 ];
 
+interface DataProviderAbortionController {
+  abort(): void;
+}
+
+interface LocalDataProviderAbortionController
+  extends DataProviderAbortionController {
+  timerId: ReturnType<typeof setTimeout>;
+}
+
 interface DataProvider {
+  getAbortionControllerHandler: () => void;
   requestData(token: string): Promise<string[]>;
 }
 
 class LocalDataProvider implements DataProvider {
-  private requestController: AbortController = null;
   private localDictionary: Record<string, string[]> = {};
-  private timerId: ReturnType<typeof setTimeout> = null;
+  private abortionController: LocalDataProviderAbortionController = {
+    timerId: null,
+    abort: function () {
+      if (this.timerId !== null) {
+        clearTimeout(this.timerId);
+      }
+    }.bind(this)
+  };
+
+  get getAbortionControllerHandler(): () => void {
+    return this.abortionController.abort;
+  }
 
   requestData(token: string) {
-    this.requestController = new AbortController();
-    if (this.timerId !== null) {
-      clearTimeout(this.timerId);
-    }
+    this.abortionController.abort();
 
     return new Promise<string[]>((resolve, reject) => {
       if (this.localDictionary[token]) {
         resolve(this.localDictionary[token]);
       } else {
         // Emulating the network request
-        this.timerId = setTimeout(() => {
-          this.timerId = null;
+        this.abortionController.timerId = setTimeout(() => {
+          this.abortionController.timerId = null;
 
           const results = DICTIONARY.filter(
             key =>
