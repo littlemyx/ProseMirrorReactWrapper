@@ -1,10 +1,4 @@
-import { DecorationSet } from "prosemirror-view";
+import { Mark } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
-import { Node } from "prosemirror-model";
 import { SelectedRange } from "../types";
-import { Word, Error, ErrorMap } from "./types";
-export declare function getherAllWords(doc: Node): Word[];
-export declare function createErrorMap(errors: Error[]): ErrorMap;
-export declare function createDecorations(errors: Word[], doc: Node): DecorationSet<any>;
-export declare function createCorrectionFunction(view: EditorView, { from, to }: SelectedRange): (correction: string) => void;
-export declare const debouncedCall: (callback: () => void, timeout?: number) => void;
+export declare function createCorrectionFunction(view: EditorView, { from, to }: SelectedRange, mark?: Mark): (correction: string) => void;
