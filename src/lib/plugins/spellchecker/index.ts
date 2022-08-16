@@ -1,2 +1,2 @@
 export { default } from "./spellchecker";
-export { default as SpellcheckerPopup } from "./spellcheckerPopup";
+export { default as SpellcheckerPopup } from "./SpellcheckerPopup";
