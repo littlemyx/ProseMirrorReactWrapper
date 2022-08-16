@@ -1,6 +1,6 @@
 {
   "name": "prose-mirror-react-wrapper",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Basic React wrapper for ProseMirror",
   "main": "build/index.js",
   "types": "build/types/index.d.ts",
