@@ -71,7 +71,7 @@ function createAutocompletePlugin(
         };
       },
 
-      apply(tr, prev, oldState, newState) {
+      apply(tr, prev) {
         const meta = tr.getMeta(this.spec.key);
 
         const decoration = tr.docChanged
@@ -106,7 +106,7 @@ function createAutocompletePlugin(
         const { decoration } = this.getState(state);
         return decoration;
       },
-      handleKeyDown(view: EditorView, event: KeyboardEvent) {
+      handleKeyDown(view: EditorView) {
         const currectState = this.spec.key.getState(view.state);
 
         if (currectState.isPopupVisible) {
@@ -126,21 +126,13 @@ function createAutocompletePlugin(
             })
           );
         } else {
-          const {
-            $cursor: { pos: endOfDocPosition }
-          } = Selection.atEnd(view.state.doc) as TextSelection;
-
           const { decoration } = this.getState(view.state);
           const deco = decoration.find(pos, pos)[0];
           if (!deco) return;
 
-          const $f = view.state.doc.resolve(deco.from);
-          const from = deco.from - $f.start();
-          // const from = deco.from;
-          const to = deco.to - $f.start();
-          // const to = deco.to;
-          const token = $f.parent.textBetween(from, to, " ");
-          if (!token) return; // sanity
+          const $from = view.state.doc.resolve(deco.from);
+          const from = deco.from - $from.start();
+          const to = deco.to - $from.start();
 
           const coords = view.coordsAtPos(pos);
           const screenPosition = {
@@ -148,6 +140,7 @@ function createAutocompletePlugin(
             y: coords.bottom - 4
           };
 
+          // Я понимаю что тут видимо как-то нужно использовать map, но не очень понимаю как именно
           const range: SelectedRange = { from: from + 1, to: to + 1 };
 
           view.dispatch(
@@ -155,7 +148,7 @@ function createAutocompletePlugin(
               isPopupVisible: true,
               screenPosition,
               clickHandler: createCorrectionFunction(view, range),
-              // Я понимаю что тут видимо как-то нужно использовать map, но не очень понимаю как именно
+
               selectedRange: range
             })
           );
