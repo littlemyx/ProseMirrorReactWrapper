@@ -16,5 +16,13 @@ npm install
 npm run start
 ```
 
+OR 
+
+
+```
+cd demo
+npx serve .
+```
+
 ## Known issues
 - Having a word with dif**ferent** mark up will prosseded incorrectly as two separate words
