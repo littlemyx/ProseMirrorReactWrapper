@@ -27,11 +27,13 @@ const View = ({ clickHandler, items, position }: Props) => {
 
       <div ref={setPopperElement} style={styles.popper} {...attributes.popper}>
         <div className="popup" onClick={clickHandler}>
-          {items.map(item => (
-            <option value={item} key={item} className="popupItem">
-              {item}
-            </option>
-          ))}
+          <ul>
+            {items.map(item => (
+              <li value={item} key={item} className="popupItem">
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
         <div ref={setArrowElement} style={styles.arrow} />
       </div>

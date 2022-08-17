@@ -22,7 +22,7 @@ const Popup = ({
   const clickHandler = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
 
-    if (target.tagName === "OPTION") {
+    if (target.tagName === "LI") {
       const value = target.innerText;
       clickHandlerProp(value);
     }

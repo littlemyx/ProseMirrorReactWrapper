@@ -73,8 +73,6 @@ function createAutocompletePlugin(
             );
           }
         } else {
-          // TODO extract to function
-
           const {
             $cursor: { pos: cursorPositions }
           } = view.state.selection as TextSelection;
