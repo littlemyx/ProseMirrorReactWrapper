@@ -81,12 +81,20 @@ export function checkPosition(
   }
 }
 
+/**
+ * Takes a node and returns the last word from it
+ */
+
 export function getLastWordFromNode(node: Node) {
   const wordRegEx = /\w+/g;
   const matchWord = node.text.match(wordRegEx);
 
   return matchWord[matchWord.length - 1];
 }
+
+/**
+ * Takes a doc and a position in it and a node which contain this position
+ */
 
 export function getNodeByPosition(doc: Node, position: number) {
   const resolvedPos = doc.resolve(position);

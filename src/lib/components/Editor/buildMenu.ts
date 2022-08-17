@@ -84,45 +84,48 @@ type MenuItemResult = {
 /// Given a schema, look for default mark and node types in it and
 /// return an object with relevant menu items relating to those marks.
 function buildMenu(schema: Schema): MenuItemResult {
-  const r: MenuItemResult = {} as any;
+  const result: MenuItemResult = {} as any;
   let mark: MarkType | undefined;
   if ((mark = schema.marks.strong))
-    r.toggleStrong = markItem(mark, {
+    result.toggleStrong = markItem(mark, {
       title: "Toggle strong style",
       icon: icons.strong
     });
   if ((mark = schema.marks.em))
-    r.toggleEm = markItem(mark, { title: "Toggle emphasis", icon: icons.em });
+    result.toggleEm = markItem(mark, {
+      title: "Toggle emphasis",
+      icon: icons.em
+    });
 
   let node: NodeType | undefined;
 
   if ((node = schema.nodes.paragraph))
-    r.makeParagraph = blockTypeItem(node, {
+    result.makeParagraph = blockTypeItem(node, {
       title: "Change to paragraph",
       label: "Plain"
     });
 
   if ((node = schema.nodes.heading))
     for (let i = 1; i <= 10; i++)
-      (r as any)["makeHead" + i] = blockTypeItem(node, {
+      (result as any)["makeHead" + i] = blockTypeItem(node, {
         title: "Change to heading " + i,
         label: "Level " + i,
         attrs: { level: i }
       });
 
-  r.typeMenu = new Dropdown(
+  result.typeMenu = new Dropdown(
     cut([
-      r.makeParagraph,
-      r.makeCodeBlock,
-      r.makeHead1 &&
+      result.makeParagraph,
+      result.makeCodeBlock,
+      result.makeHead1 &&
         new DropdownSubmenu(
           cut([
-            r.makeHead1,
-            r.makeHead2,
-            r.makeHead3,
-            r.makeHead4,
-            r.makeHead5,
-            r.makeHead6
+            result.makeHead1,
+            result.makeHead2,
+            result.makeHead3,
+            result.makeHead4,
+            result.makeHead5,
+            result.makeHead6
           ]),
           { label: "Heading" }
         )
@@ -130,11 +133,11 @@ function buildMenu(schema: Schema): MenuItemResult {
     { label: "Type..." }
   );
 
-  r.inlineMenu = [cut([r.toggleStrong, r.toggleEm])];
+  result.inlineMenu = [cut([result.toggleStrong, result.toggleEm])];
 
-  r.fullMenu = r.inlineMenu.concat([[r.typeMenu]]);
+  result.fullMenu = result.inlineMenu.concat([[result.typeMenu]]);
 
-  return r;
+  return result;
 }
 
 export default buildMenu;

@@ -97,7 +97,10 @@ export function createCorrectionFunction(
  *
  * Cheap version of debouncer. Works only for one function
  *
- * **/
+ *  Можно было бы использовать библиотеку lodash и использовать метод debounce, либо же реализовать самостоятельно,
+ *  но для существующей задачи нет желания усложнять
+ *
+ * */
 
 export const debouncedCall = (function () {
   let timerId: ReturnType<typeof setTimeout> | null = null;
