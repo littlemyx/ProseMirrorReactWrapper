@@ -58,8 +58,8 @@ export default class LocalDataProvider
     }.bind(this)
   };
 
-  get getAbortionControllerHandler(): () => void {
-    return this.abortionController.abort;
+  get getAbortionController(): DataProviderAbortionController {
+    return this.abortionController;
   }
 
   requestData(words: Word[]) {

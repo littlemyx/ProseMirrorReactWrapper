@@ -9,7 +9,7 @@ describe("Spellchecker DataProvider", () => {
   it("has an abort methods", () => {
     const dataProvider = new LocalDataProvider();
 
-    expect(dataProvider.getAbortionControllerHandler).toBeDefined();
+    expect(dataProvider.getAbortionController).toBeDefined();
   });
   it("returns correct data", async () => {
     const correctWord = "donkey";

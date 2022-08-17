@@ -1,5 +1,3 @@
-const path = require("path");
-
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
@@ -8,9 +6,7 @@ module.exports = {
   devtool: "cheap-module-source-map",
   entry: "./src/demo/index.tsx",
   output: {
-    filename: "[name].bundle.js",
-    path: path.resolve(__dirname, "demo"),
-    clean: true
+    filename: "[name].bundle.js"
   },
   optimization: {
     splitChunks: {
@@ -23,6 +19,12 @@ module.exports = {
       }
     },
     minimize: false
+  },
+  devServer: {
+    open: true,
+    hot: true,
+    host: "localhost",
+    port: 9000
   },
   module: {
     rules: [

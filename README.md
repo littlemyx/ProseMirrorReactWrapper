@@ -10,7 +10,7 @@
 - Plugin works with witn an english words (without hyphens) which are presented in lists: [autocomplete](https://github.com/littlemyx/ProseMirrorReactWrapper/blob/master/src/lib/plugins/autocomplete/dataProvider.ts), [spellchecker](https://github.com/littlemyx/ProseMirrorReactWrapper/blob/master/src/lib/plugins/spellchecker/dataProvider.ts)
 ## 📦 Getting Started
 
-To get started simply clone the repo and run
+### To get started simply clone the repo and run
 
 ```
 npm install
@@ -23,6 +23,11 @@ OR
 ```
 cd demo
 npx serve .
+```
+
+### To rebuild static version run 
+```
+npm run build:demo
 ```
 
 ## Tests

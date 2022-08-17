@@ -1,7 +1,11 @@
+type Abort = () => void;
+
 export interface DataProviderAbortionController {
-  abort(): void;
+  abort: Abort;
 }
 export interface DataProvider<T, U> {
-  getAbortionControllerHandler: () => void;
+
+  getAbortionController: DataProviderAbortionController;
+
   requestData(_token: T): Promise<U>;
 }

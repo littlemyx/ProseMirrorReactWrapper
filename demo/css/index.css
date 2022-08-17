@@ -1,3 +1,16 @@
+/*!*************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./src/lib/index.css ***!
+  \*************************************************************************************************/
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style-type: none;
+}
+
 /*!**********************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./src/lib/plugins/spellchecker/index.css ***!
   \**********************************************************************************************************************/
@@ -11,18 +24,43 @@
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./src/lib/components/Popup/index.css ***!
   \******************************************************************************************************************/
 .popup {
-  width: 100px;
-  height: 100px;
-  background-color: gray;
-  border: 1px solid black;
+  min-height: 100px;
+  background-color: #fff;
+  border: 3px solid black;
+  border-radius: 4px;
+  max-width: 200px;
+  max-height: 200px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  display: flex;
+  align-items: center;
 }
 
 .popupItem {
   cursor: pointer;
+  height: 40px;
+  display: flex;
+  justify-content: flex-start;
+  text-align: center;
+  align-items: center;
+  padding: 0 4px 0 4px;
+}
+
+.popupItem:hover {
+  background-color: #eee;
+}
+
+.popupItemContent {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .popupAnchor {
   position: fixed;
+}
+
+.emptyList {
+  padding: 4px;
 }
 
 /*!***********************************************************************************************************************************!*\

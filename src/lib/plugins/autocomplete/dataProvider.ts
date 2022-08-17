@@ -40,8 +40,8 @@ class LocalDataProvider implements DataProvider<string, string[]> {
     }.bind(this)
   };
 
-  get getAbortionControllerHandler(): () => void {
-    return this.abortionController.abort;
+  get getAbortionController(): DataProviderAbortionController {
+    return this.abortionController;
   }
 
   requestData(token: string) {
