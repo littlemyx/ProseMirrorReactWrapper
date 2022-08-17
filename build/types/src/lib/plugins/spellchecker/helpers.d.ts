@@ -25,5 +25,8 @@ export declare function createCorrectionFunction(view: EditorView, { from, to }:
  *
  * Cheap version of debouncer. Works only for one function
  *
- * **/
+ *  Можно было бы использовать библиотеку lodash и использовать метод debounce, либо же реализовать самостоятельно,
+ *  но для существующей задачи нет желания усложнять
+ *
+ * */
 export declare const debouncedCall: (callback: () => void, timeout?: number) => void;

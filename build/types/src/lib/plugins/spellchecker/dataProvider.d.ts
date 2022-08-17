@@ -1,7 +1,7 @@
-import type { DataProvider } from "../dataProvider";
+import type { DataProvider, DataProviderAbortionController } from "../dataProvider";
 import { Word, Error } from "./types";
 export default class LocalDataProvider implements DataProvider<Word[], Error[]> {
     private abortionController;
-    get getAbortionControllerHandler(): () => void;
+    get getAbortionController(): DataProviderAbortionController;
     requestData(words: Word[]): Promise<Error[]>;
 }
