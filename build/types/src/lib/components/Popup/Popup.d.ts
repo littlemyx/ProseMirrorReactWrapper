@@ -5,7 +5,7 @@ interface Props {
     isVisible: boolean;
     items: string[];
     screenPosition: ScreenPosition;
-    clickHandler: (correction: string) => void;
+    clickHandler: (_correction: string) => void;
 }
 declare const Popup: ({ isVisible, screenPosition, items, clickHandler: clickHandlerProp }: Props) => JSX.Element;
 export default Popup;

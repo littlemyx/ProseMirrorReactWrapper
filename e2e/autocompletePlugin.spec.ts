@@ -90,7 +90,7 @@ test.describe("Autocomplete plugin", async () => {
 
     await page.waitForTimeout(6000);
 
-    const option = page.locator(".ProseMirrorContainer .popup option");
+    const option = page.locator(".ProseMirrorContainer .popup li");
 
     await option.click();
 
@@ -114,7 +114,7 @@ test.describe("Autocomplete plugin", async () => {
 
     await page.waitForTimeout(6000);
 
-    const options = page.locator(".ProseMirrorContainer .popup option");
+    const options = page.locator(".ProseMirrorContainer .popup li");
 
     await expect(options).toHaveCount(3);
   });
@@ -142,7 +142,7 @@ test.describe("Autocomplete plugin", async () => {
 
     await page.waitForTimeout(6000);
 
-    const option = page.locator(".ProseMirrorContainer .popup option");
+    const option = page.locator(".ProseMirrorContainer .popup li");
 
     await option.click();
 

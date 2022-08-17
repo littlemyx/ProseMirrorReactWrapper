@@ -139,9 +139,7 @@ test.describe("Spellchecker plugin", async () => {
 
     await content.click();
 
-    const option = page.locator(
-      ".ProseMirrorContainer .popup option:nth-child(1)"
-    );
+    const option = page.locator(".ProseMirrorContainer .popup li:nth-child(1)");
 
     await option.click();
 

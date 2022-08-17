@@ -1,12 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */ // TODO do we need this?
 import "./index.css";
 import { DecorationSet } from "prosemirror-view";
-import {
-  Plugin,
-  EditorState,
-  TextSelection,
-  Selection
-} from "prosemirror-state";
+import { Plugin, EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 
 import { SelectedRange } from "../types";
@@ -16,7 +10,7 @@ import LocalDataProvider from "./dataProvider";
 import type { DataProvider } from "../dataProvider";
 import {
   debouncedCall,
-  getherAllWords,
+  gatherAllWords,
   createDecorations,
   createErrorMap,
   createCorrectionFunction
@@ -37,7 +31,7 @@ function createAutocompletePlugin(
 
           if (nextPluginState.docChanged) {
             debouncedCall(async () => {
-              const words = getherAllWords(editor.state.doc);
+              const words = gatherAllWords(editor.state.doc);
               const errors = await dataProvider.requestData(words);
               const decorations = createDecorations(errors, editor.state.doc);
               const errorMap = createErrorMap(errors);
@@ -77,13 +71,12 @@ function createAutocompletePlugin(
         const decoration = tr.docChanged
           ? DecorationSet.empty
           : meta?.decorations ?? prev.decoration;
+
         const errors = meta?.errors ?? prev.errors;
         const errorMap = meta?.errorMap ?? prev.errorMap;
         const selectedRange = meta?.selectedRange ?? prev.selectedRange;
-        const isPopupVisible =
-          selectedRange && errorMap[`${selectedRange.from}-${selectedRange.to}`]
-            ? meta?.isPopupVisible ?? prev.isPopupVisible
-            : false;
+
+        const isPopupVisible = meta?.isPopupVisible ?? prev.isPopupVisible;
 
         const screenPosition = meta?.screenPosition ?? prev.screenPosition;
         const clickHandler = meta?.clickHandler ?? prev.clickHandler;
@@ -135,8 +128,9 @@ function createAutocompletePlugin(
           const to = deco.to - $from.start();
 
           const coords = view.coordsAtPos(pos);
+
           const screenPosition = {
-            x: event.pageX,
+            x: coords.left,
             y: coords.bottom - 4
           };
 
@@ -148,7 +142,6 @@ function createAutocompletePlugin(
               isPopupVisible: true,
               screenPosition,
               clickHandler: createCorrectionFunction(view, range),
-
               selectedRange: range
             })
           );
