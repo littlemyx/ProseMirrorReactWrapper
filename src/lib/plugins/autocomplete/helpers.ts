@@ -1,4 +1,4 @@
-import { Mark } from "prosemirror-model";
+import { Mark, Node } from "prosemirror-model";
 import { TextSelection } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { ReplaceStep } from "prosemirror-transform";
@@ -54,26 +54,16 @@ export function checkPosition(
     _range: SelectedRange
   ) => void
 ) {
-  const resolvedPos = view.state.doc.resolve(position);
-  const parentInfo = resolvedPos.parent.childBefore(resolvedPos.parentOffset);
-  const node = parentInfo.node;
-  const nodeStartPos = parentInfo.offset;
-  const posInParent = resolvedPos.parentOffset;
-  const offsetInLink = posInParent - nodeStartPos;
-  const nodeFrom = position - offsetInLink;
-  const nodeTo = nodeFrom + node.nodeSize;
+  const { node, from, to } = getNodeByPosition(view.state.doc, position);
 
-  const token = view.state.doc.textBetween(nodeFrom, nodeTo, " ");
+  const token = view.state.doc.textBetween(from, to, " ");
 
   const letterRegEx = /\w/g;
   const matchLetter =
     token.length > 0 ? token[token.length - 1].match(letterRegEx) : null;
 
-  if (position === nodeTo && matchLetter !== null) {
-    const wordRegEx = /\w+/g;
-    const matchWord = node.text.match(wordRegEx);
-
-    const word = matchWord[matchWord.length - 1];
+  if (position === to && matchLetter !== null) {
+    const word = getLastWordFromNode(node);
 
     const cursorViewPortPosition = view.coordsAtPos(position);
 
@@ -83,10 +73,30 @@ export function checkPosition(
     };
 
     const range: SelectedRange = {
-      from: nodeTo - word.length,
-      to: nodeTo
+      from: to - word.length,
+      to: to
     };
 
-    callback(word, node.marks, screenPosition, range);
+    callback(word, node.marks as Mark[], screenPosition, range);
   }
+}
+
+export function getLastWordFromNode(node: Node) {
+  const wordRegEx = /\w+/g;
+  const matchWord = node.text.match(wordRegEx);
+
+  return matchWord[matchWord.length - 1];
+}
+
+export function getNodeByPosition(doc: Node, position: number) {
+  const resolvedPos = doc.resolve(position);
+  const parentInfo = resolvedPos.parent.childBefore(resolvedPos.parentOffset);
+  const node = parentInfo.node;
+  const nodeStartPos = parentInfo.offset;
+  const posInParent = resolvedPos.parentOffset;
+  const offsetInLink = posInParent - nodeStartPos;
+  const nodeFrom = position - offsetInLink;
+  const nodeTo = nodeFrom + node.nodeSize;
+
+  return { node, from: nodeFrom, to: nodeTo };
 }

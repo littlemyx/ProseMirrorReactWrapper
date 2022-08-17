@@ -30,6 +30,7 @@ function createAutocompletePlugin(
           const nextPluginState = pluginKey.getState(editor.state);
 
           if (nextPluginState.docChanged) {
+            dataProvider.getAbortionController.abort();
             debouncedCall(async () => {
               const words = gatherAllWords(editor.state.doc);
               const errors = await dataProvider.requestData(words);

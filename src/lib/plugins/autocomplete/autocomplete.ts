@@ -64,6 +64,8 @@ function createAutocompletePlugin(
       handleKeyDown(view: EditorView, event: KeyboardEvent) {
         const currectState = this.spec.key.getState(view.state);
 
+        dataProvider.getAbortionController.abort();
+
         if (event.key !== "Tab") {
           if (currectState.isPopupVisible) {
             view.dispatch(
