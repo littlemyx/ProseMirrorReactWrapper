@@ -1,12 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */ // TODO do we need this?
 import "./index.css";
 import { DecorationSet } from "prosemirror-view";
-import {
-  Plugin,
-  EditorState,
-  TextSelection,
-  Selection
-} from "prosemirror-state";
+import { Plugin, EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 
 import { SelectedRange } from "../types";

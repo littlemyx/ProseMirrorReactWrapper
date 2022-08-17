@@ -1,6 +1,7 @@
 import { Decoration, DecorationSet } from "prosemirror-view";
+import { StateField } from "prosemirror-state";
 
-import { BasePluginState, ScreenPosition } from "../../types";
+import { ScreenPosition } from "../../types";
 import { SelectedRange } from "../types";
 
 export interface Word {
@@ -15,14 +16,14 @@ export interface ErrorMap {
   [key: string]: string[];
 }
 
-export interface SpellcheckerPluginState extends BasePluginState {
+export interface SpellcheckerPluginState extends StateField {
   decoration: DecorationSet;
   cursorDeco: Decoration;
   docChanged: boolean;
   screenPosition: ScreenPosition | null;
   isPopupVisible: boolean;
   selectedRange: SelectedRange | null;
-  clickHandler: (correction: string) => void | null;
+  clickHandler: (_correction: string) => void | null;
   errors: Word[];
   errorMap: ErrorMap;
 }

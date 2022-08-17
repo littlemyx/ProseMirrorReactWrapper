@@ -10,7 +10,7 @@ interface Props {
   isVisible: boolean;
   items: string[];
   screenPosition: ScreenPosition;
-  clickHandler: (correction: string) => void;
+  clickHandler: (_correction: string) => void;
 }
 
 const Popup = ({

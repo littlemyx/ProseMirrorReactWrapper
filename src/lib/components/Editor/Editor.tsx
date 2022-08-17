@@ -7,11 +7,9 @@ import { schema } from "prosemirror-schema-basic";
 import { keymap } from "prosemirror-keymap";
 import { baseKeymap } from "prosemirror-commands";
 import { useProseMirror, ProseMirror } from "use-prosemirror";
-import { Plugin } from "prosemirror-state";
+import { Plugin, StateField } from "prosemirror-state";
 
 import { menuBar } from "prosemirror-menu";
-
-import { BasePluginState } from "../../types";
 
 import { SpellcheckerPopup } from "../../plugins/spellchecker";
 import { AutocompletePopup } from "../../plugins/autocomplete";
@@ -19,7 +17,7 @@ import { AutocompletePopup } from "../../plugins/autocomplete";
 import buildMenu from "./buildMenu";
 
 interface EditorProps {
-  plugins: Plugin<BasePluginState, any>[];
+  plugins: Plugin<StateField, any>[];
   className?: string;
 }
 
