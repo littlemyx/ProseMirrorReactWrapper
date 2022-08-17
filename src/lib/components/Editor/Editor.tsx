@@ -7,21 +7,23 @@ import { schema } from "prosemirror-schema-basic";
 import { keymap } from "prosemirror-keymap";
 import { baseKeymap } from "prosemirror-commands";
 import { useProseMirror, ProseMirror } from "use-prosemirror";
-import { Plugin, StateField } from "prosemirror-state";
+import { EditorState, Plugin, StateField } from "prosemirror-state";
 
 import { menuBar } from "prosemirror-menu";
-
-import { SpellcheckerPopup } from "../../plugins/spellchecker";
-import { AutocompletePopup } from "../../plugins/autocomplete";
 
 import buildMenu from "./buildMenu";
 
 interface EditorProps {
   plugins: Plugin<StateField, any>[];
+  renderPluginsViews: (_state: EditorState) => JSX.Element;
   className?: string;
 }
 
-const Editor = ({ plugins, className = null }: EditorProps) => {
+const Editor = ({
+  plugins,
+  renderPluginsViews,
+  className = null
+}: EditorProps) => {
   const opts = useRef<Parameters<typeof useProseMirror>[0]>({
     schema: schema,
     plugins: [
@@ -42,8 +44,7 @@ const Editor = ({ plugins, className = null }: EditorProps) => {
   return (
     <div className="ProseMirrorContainer">
       <ProseMirror className={className} state={state} onChange={setState} />
-      <SpellcheckerPopup state={state} />
-      <AutocompletePopup state={state} />
+      {renderPluginsViews(state)}
     </div>
   );
 };

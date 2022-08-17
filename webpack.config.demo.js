@@ -6,18 +6,18 @@ module.exports = {
   devtool: "cheap-module-source-map",
   entry: "./src/demo/index.tsx",
   output: {
-    filename: "index.js"
+    filename: "[name].bundle.js"
   },
   optimization: {
-    // splitChunks: {
-    //   cacheGroups: {
-    //     vendor: {
-    //       test: /[\\/]node_modules[\\/]/,
-    //       chunks: "initial",
-    //       name: "vendor"
-    //     }
-    //   }
-    // },
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          chunks: "initial",
+          name: "vendor"
+        }
+      }
+    },
     minimize: false
   },
   devServer: {

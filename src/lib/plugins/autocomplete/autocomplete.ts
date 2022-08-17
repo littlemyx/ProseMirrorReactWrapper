@@ -73,33 +73,39 @@ function createAutocompletePlugin(
             );
           }
         } else {
-          const {
-            $cursor: { pos: cursorPositions }
-          } = view.state.selection as TextSelection;
+          if (view.state.selection.empty) {
+            const {
+              $cursor: { pos: cursorPositions }
+            } = view.state.selection as TextSelection;
 
-          checkPosition(
-            view,
-            cursorPositions,
-            (
-              word: string,
-              marks: Mark[],
-              screenPosition: ScreenPosition,
-              range: SelectedRange
-            ) => {
-              dataProvider.requestData(word).then(results => {
-                if (results.length) {
-                  view.dispatch(
-                    view.state.tr.setMeta(this.spec.key, {
-                      isPopupVisible: true,
-                      screenPosition,
-                      candidates: results,
-                      clickHandler: createCorrectionFunction(view, range, marks)
-                    })
-                  );
-                }
-              });
-            }
-          );
+            checkPosition(
+              view,
+              cursorPositions,
+              (
+                word: string,
+                marks: Mark[],
+                screenPosition: ScreenPosition,
+                range: SelectedRange
+              ) => {
+                dataProvider.requestData(word).then(results => {
+                  if (results.length) {
+                    view.dispatch(
+                      view.state.tr.setMeta(this.spec.key, {
+                        isPopupVisible: true,
+                        screenPosition,
+                        candidates: results,
+                        clickHandler: createCorrectionFunction(
+                          view,
+                          range,
+                          marks
+                        )
+                      })
+                    );
+                  }
+                });
+              }
+            );
+          }
 
           return true;
         }

@@ -31,11 +31,20 @@ const Popup = ({
   return (
     <>
       {isVisible && (
-        <View
-          clickHandler={clickHandler}
-          position={screenPosition}
-          items={items}
-        />
+        <View clickHandler={clickHandler} position={screenPosition}>
+          <ul>
+            {items.map(item => (
+              <li value={item} key={item} className="popupItem">
+                {item}
+              </li>
+            ))}
+          </ul>
+        </View>
+      )}
+      {isVisible && items.length === 0 && (
+        <View position={screenPosition}>
+          <div className="emptyList">No options were provided</div>
+        </View>
       )}
     </>
   );

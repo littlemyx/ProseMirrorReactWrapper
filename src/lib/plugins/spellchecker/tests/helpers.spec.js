@@ -1,6 +1,6 @@
 import {
   createErrorMap,
-  getherAllWords,
+  gatherAllWords,
   createDecorations,
   debouncedCall
 } from "../helpers";
@@ -44,7 +44,7 @@ describe("Spellchecker helper functions", () => {
     });
 
     describe("finds all words", () => {
-      const result = getherAllWords(state.doc);
+      const result = gatherAllWords(state.doc);
 
       it("correctly", () => {
         expect(result[0].text).toBe("hello");

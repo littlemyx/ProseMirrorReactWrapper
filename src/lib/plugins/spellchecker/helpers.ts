@@ -8,7 +8,11 @@ import { SelectedRange } from "../types";
 import { Word, Error, ErrorMap } from "./types";
 import key from "./key";
 
-export function getherAllWords(doc: Node) {
+/**
+ * Traverses the document and returns each words in the document separately with its borders.
+ */
+
+export function gatherAllWords(doc: Node) {
   const words: Word[] = [];
 
   function record(text: string, from: number, to: number) {
@@ -33,6 +37,13 @@ export function getherAllWords(doc: Node) {
   return words;
 }
 
+/**
+ *
+ * Creates a map of errors for a given document.
+ * Maps helps to compare the ragne in the doc with the suggested variants of replacement.
+ *
+ */
+
 export function createErrorMap(errors: Error[]) {
   const map = {} as ErrorMap;
   errors.forEach(error => {
@@ -52,6 +63,12 @@ export function createDecorations(errors: Word[], doc: Node) {
   });
   return DecorationSet.create(doc, decos);
 }
+
+/**
+ *
+ * Creates the function that will be used to replace the word with the correction
+ *
+ **/
 
 export function createCorrectionFunction(
   view: EditorView,
@@ -75,6 +92,12 @@ export function createCorrectionFunction(
     view.focus();
   };
 }
+
+/**
+ *
+ * Cheap version of debouncer. Works only for one function
+ *
+ * **/
 
 export const debouncedCall = (function () {
   let timerId: ReturnType<typeof setTimeout> | null = null;

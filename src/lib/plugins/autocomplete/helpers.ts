@@ -8,6 +8,12 @@ import { ScreenPosition } from "../../types";
 
 import key from "./key";
 
+/**
+ *
+ * Creates the function that will be used to replace the word with the correction
+ *
+ **/
+
 export function createCorrectionFunction(
   view: EditorView,
   { from, to }: SelectedRange,
@@ -32,6 +38,11 @@ export function createCorrectionFunction(
     view.focus();
   };
 }
+
+/**
+ * Function to check and react on autocomplete initiation event
+ * Finds the node by the position of the cursor and checks if it is a word calling a callback function after this
+ */
 
 export function checkPosition(
   view: EditorView,

@@ -10,7 +10,7 @@ import LocalDataProvider from "./dataProvider";
 import type { DataProvider } from "../dataProvider";
 import {
   debouncedCall,
-  getherAllWords,
+  gatherAllWords,
   createDecorations,
   createErrorMap,
   createCorrectionFunction
@@ -31,7 +31,7 @@ function createAutocompletePlugin(
 
           if (nextPluginState.docChanged) {
             debouncedCall(async () => {
-              const words = getherAllWords(editor.state.doc);
+              const words = gatherAllWords(editor.state.doc);
               const errors = await dataProvider.requestData(words);
               const decorations = createDecorations(errors, editor.state.doc);
               const errorMap = createErrorMap(errors);
@@ -76,12 +76,7 @@ function createAutocompletePlugin(
         const errorMap = meta?.errorMap ?? prev.errorMap;
         const selectedRange = meta?.selectedRange ?? prev.selectedRange;
 
-        const rangeHasError =
-          selectedRange &&
-          errorMap[`${selectedRange.from}-${selectedRange.to}`];
-        const isPopupVisible = rangeHasError
-          ? meta?.isPopupVisible ?? prev.isPopupVisible
-          : false;
+        const isPopupVisible = meta?.isPopupVisible ?? prev.isPopupVisible;
 
         const screenPosition = meta?.screenPosition ?? prev.screenPosition;
         const clickHandler = meta?.clickHandler ?? prev.clickHandler;
