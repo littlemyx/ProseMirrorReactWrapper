@@ -54,16 +54,20 @@ export function checkPosition(
     _range: SelectedRange
   ) => void
 ) {
+
   const { node, from, to } = getNodeByPosition(view.state.doc, position);
 
   const token = view.state.doc.textBetween(from, to, " ");
+
 
   const letterRegEx = /\w/g;
   const matchLetter =
     token.length > 0 ? token[token.length - 1].match(letterRegEx) : null;
 
+
   if (position === to && matchLetter !== null) {
     const word = getLastWordFromNode(node);
+
 
     const cursorViewPortPosition = view.coordsAtPos(position);
 
@@ -73,6 +77,7 @@ export function checkPosition(
     };
 
     const range: SelectedRange = {
+
       from: to - word.length,
       to: to
     };
