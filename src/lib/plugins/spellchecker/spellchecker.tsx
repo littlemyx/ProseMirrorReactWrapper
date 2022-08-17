@@ -77,13 +77,17 @@ function createAutocompletePlugin(
         const decoration = tr.docChanged
           ? DecorationSet.empty
           : meta?.decorations ?? prev.decoration;
+
         const errors = meta?.errors ?? prev.errors;
         const errorMap = meta?.errorMap ?? prev.errorMap;
         const selectedRange = meta?.selectedRange ?? prev.selectedRange;
-        const isPopupVisible =
-          selectedRange && errorMap[`${selectedRange.from}-${selectedRange.to}`]
-            ? meta?.isPopupVisible ?? prev.isPopupVisible
-            : false;
+
+        const rangeHasError =
+          selectedRange &&
+          errorMap[`${selectedRange.from}-${selectedRange.to}`];
+        const isPopupVisible = rangeHasError
+          ? meta?.isPopupVisible ?? prev.isPopupVisible
+          : false;
 
         const screenPosition = meta?.screenPosition ?? prev.screenPosition;
         const clickHandler = meta?.clickHandler ?? prev.clickHandler;
@@ -135,8 +139,9 @@ function createAutocompletePlugin(
           const to = deco.to - $from.start();
 
           const coords = view.coordsAtPos(pos);
+
           const screenPosition = {
-            x: event.pageX,
+            x: coords.left,
             y: coords.bottom - 4
           };
 
@@ -148,7 +153,6 @@ function createAutocompletePlugin(
               isPopupVisible: true,
               screenPosition,
               clickHandler: createCorrectionFunction(view, range),
-
               selectedRange: range
             })
           );

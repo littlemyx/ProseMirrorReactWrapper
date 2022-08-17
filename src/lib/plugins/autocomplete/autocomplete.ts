@@ -72,10 +72,6 @@ function createAutocompletePlugin(
             );
           }
         } else {
-          const {
-            $cursor: { pos: endOfDocPosition }
-          } = Selection.atEnd(view.state.doc) as TextSelection;
-
           // TODO extract to function
 
           const {

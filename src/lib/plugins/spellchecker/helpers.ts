@@ -76,9 +76,9 @@ export function createCorrectionFunction(
   };
 }
 
-// TODO: this is a hack to get the plugin to work with delayed updates
 export const debouncedCall = (function () {
   let timerId: ReturnType<typeof setTimeout> | null = null;
+
   return function (callback: () => void, timeout = 5000) {
     if (timerId) {
       clearTimeout(timerId);
