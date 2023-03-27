@@ -30,7 +30,7 @@
     "es6"
   ],
   "dependencies": {
-    "@popperjs/core": "^2.11.6",
+    "@popperjs/core": "^2.11.7",
     "@types/prosemirror-commands": "~1.0.4",
     "@types/prosemirror-history": "1.0.2",
     "@types/prosemirror-keymap": "~1.0.4",
